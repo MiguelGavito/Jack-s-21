@@ -86,10 +86,14 @@ public class DeckManager : MonoBehaviour
         if (deck.Count > 0)
         {
             GameObject drawnCard = deck.Pop();
-
-            drawnCard.transform.SetParent(playerTransform);
-
+            drawnCard.transform.SetParent(playerTransform, false); // Mantener transformaciones locales
             drawnCard.transform.localPosition = new Vector3(playerTransform.childCount * 1.5f, 0, 0);
+            drawnCard.transform.localScale = Vector3.one; // Mantener tamaño correcto
+            drawnCard.SetActive(true); // Asegurar que la carta es visible
+        }
+        else
+        {
+            Debug.LogWarning("El mazo está vacío, no se puede robar más cartas.");
         }
     }
 
