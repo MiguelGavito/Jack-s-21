@@ -52,7 +52,7 @@ public class DeckManager : MonoBehaviour
 
                 // Cargar el texto
                 TextMeshProUGUI titulo = newCard.GetComponentInChildren<TextMeshProUGUI>();
-                
+
                 if (titulo == null)
                     Debug.LogError(" No se encontró TextMeshProUGUI en la carta.");
                 else
@@ -93,10 +93,10 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    
+
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

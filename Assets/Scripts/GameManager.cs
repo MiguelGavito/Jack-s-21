@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
@@ -37,13 +37,5 @@ public class GameManager : MonoBehaviour
         {
             deckManager.DrawCard(player2Transform);
         }
-    }
-
-    
-    
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
