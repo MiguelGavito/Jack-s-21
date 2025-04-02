@@ -30,27 +30,38 @@ public class DeckManager : MonoBehaviour
         {
             for (int j = 0; j <= 12; j++)
             {
+                // Creo mi nueva carta con el prefab y dentro de deck
                 GameObject newCard = Instantiate(cardPrefab, deckTransform);
-                string iden = (i * 13 + j).ToString();
-                Sprite sprite = Resources.Load<Sprite>($"sprites/Deck-of-Cards/{iden}");
 
+                // Identifico su 
+                string iden = $"{i * 13 + j}_0";
+
+                Sprite sprite = Resources.Load<Sprite>($"Assets/Sprites/Deck-of-Cards/{iden}.png");
+                /*
                 Image image = newCard.GetComponentInChildren<Image>();
                 if (image == null)
                     Debug.LogError(" No se encontró el Image en la carta.");
                 else
                 {
                     // Asignar el sprite al Image
-                    image.sprite = Resources.Load<Sprite>($"sprites/Deck-of-Cards/{iden}");
+                    image.sprite = Resources.Load<Sprite>($"Assets/Sprites/Deck-of-Cards/{iden}.png");
                 }
+                */
+                Card cardComponent = newCard.GetComponent<Card>();
+
 
                 // Cargar el texto
                 TextMeshProUGUI titulo = newCard.GetComponentInChildren<TextMeshProUGUI>();
+                
                 if (titulo == null)
                     Debug.LogError(" No se encontró TextMeshProUGUI en la carta.");
                 else
                     titulo.text = palos[i];
 
-                newCard.GetComponent<Card>().SetCard(palos[i], j + 2, j + 2, image, titulo);
+                cardComponent.spriteVis = sprite;
+
+                cardComponent.SetCard(palos[i], j + 2, j + 2, sprite, palos[i]);
+
                 deck.Push(newCard);
             }
         }

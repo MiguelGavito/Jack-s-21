@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
             deckManager.DrawCard(player2Transform);
         }
     }
+
+    
     
     // Update is called once per frame
     void Update()
