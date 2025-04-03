@@ -5,36 +5,36 @@ using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
-    public string id; //luego la usare para que cada carta sea unica (usare numeros simples)
+    public string id; // ID único de la carta
+    public bool FlipUp = false; // Estado de la carta (volteada o no)
+    public string palo; // Palo de la carta
+    public int numero; // Número de la carta
+    public Sprite cartImg; // Sprite de la carta
 
-    public bool FlipUp = false; // cuando true, solo se vera el otro lado de la carta
+    //public TextMeshProUGUI textoValor; // texto mostrando su valor
 
-
-    public string palo; // palo de la carta
-    public int numero; // Numero de la carta
-    public int numMod; // inutil por ahora
-    public Sprite spriteVis; // sprite de la carta
-    public TextMeshProUGUI textoValor; // texto mostrando su valor
-
-    public void SetCard(string _palo, int _numero, int _numMod, Sprite _sprite, string _textoValor)
+    public void SetCard(string _palo, int _numero, string _id, Sprite _cartImg) //, string _textoValor
     {
         palo = _palo;
         numero = _numero;
-        numMod = _numero;
+        id = _id;
+        cartImg = _cartImg;
 
-
-        // Asignar el sprite correctamente
-        if (spriteVis != null && _sprite != null)
+        Image imageComponent = GetComponentInChildren<Image>(); // obtengo el componente imagen del prefab card
+        if (imageComponent != null)
         {
-            spriteVis = _sprite; // Asigna el sprite
-            Debug.Log($" Imagen asignada correctamente: sprites/Deck-of-Cards/{_numero}");
-            
+            imageComponent.sprite = cartImg;
         }
         else
         {
-            Debug.LogError($" Error asignando sprite: {(_sprite == null ? "Sprite no encontrado" : "Image no asignado en prefab")}");
+            Debug.LogError("No se encontro el componente Image en la carta.");
         }
 
+
+        /*
+         * 
+         *  LUEGO LO VUELVO A ACTIVAR MAS ADELANTE
+         * 
         // Asignar el texto de la carta
         if (textoValor != null)
         {
@@ -44,12 +44,14 @@ public class Card : MonoBehaviour
         {
             Debug.LogError(" No se encontró el componente TextMeshProUGUI en la carta.");
         }
+        */
+
     }
 
     //cambiaremos el estado de la carta y se volteara (mas tarde pondremos una annimacion o algo a esto pero no se como se hace eso
     public void FlipOn()
     {
-        FlipUp = true;
+        FlipUp = FlipUp == true ? false : true;
     }
 
     

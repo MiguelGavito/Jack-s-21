@@ -8,14 +8,24 @@ public class DeckManager : MonoBehaviour
     public GameObject cardPrefab;
     public Transform deckTransform, discardTransform;
     public Transform player1Transform, player2Transform;
+    public List<Sprite> cardSprites = new List<Sprite>();
+
     private Stack<GameObject> deck = new Stack<GameObject>();
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (cardSprites.Count != 52)
+        {
+            Debug.LogError("¡La lista de sprites no tiene exactamente 52 cartas!");
+            return;
+        }
+
         GenerateDeck();
         ShuffleDeck();
     }
+
 
     public void PruebaAddCard()
     {
@@ -32,35 +42,28 @@ public class DeckManager : MonoBehaviour
             {
                 // Creo mi nueva carta con el prefab y dentro de deck
                 GameObject newCard = Instantiate(cardPrefab, deckTransform);
+                int index = i * 13 + j; // indice de la carta en mi lista
 
-                // Identifico su 
-                string iden = $"{i * 13 + j}_0";
+                // Obterner sprite directamente de la lista
+                Sprite sprite = cardSprites[index];
 
-                Sprite sprite = Resources.Load<Sprite>($"Assets/Sprites/Deck-of-Cards/{iden}.png");
-                /*
-                Image image = newCard.GetComponentInChildren<Image>();
-                if (image == null)
-                    Debug.LogError(" No se encontró el Image en la carta.");
-                else
-                {
-                    // Asignar el sprite al Image
-                    image.sprite = Resources.Load<Sprite>($"Assets/Sprites/Deck-of-Cards/{iden}.png");
-                }
-                */
+                //definir valor de numero
+                int numa = j >= 8 ? 10 : j + 2;
+
+                // Configurar la carta
                 Card cardComponent = newCard.GetComponent<Card>();
+                if (cardComponent != null)
+                {
+                    cardComponent.SetCard(palos[i], numa, palos[i] + (j + 2).ToString(), sprite);
+                }
 
-
-                // Cargar el texto
+                //Necesito ponerle a la carta un componente de esto
+                // Asignar el texto del palo
                 TextMeshProUGUI titulo = newCard.GetComponentInChildren<TextMeshProUGUI>();
-                
-                if (titulo == null)
-                    Debug.LogError(" No se encontró TextMeshProUGUI en la carta.");
-                else
+                if (titulo != null)
+                {
                     titulo.text = palos[i];
-
-                cardComponent.spriteVis = sprite;
-
-                cardComponent.SetCard(palos[i], j + 2, j + 2, sprite, palos[i]);
+                }
 
                 deck.Push(newCard);
             }
