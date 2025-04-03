@@ -60,6 +60,7 @@ public class Card : MonoBehaviour
         faceUp = true;
         Image imageComponent = GetComponentInChildren<Image>();
         imageComponent.sprite = cartImg;
+        Debug.Log($"Carta {id} volteada boca arriba. Valor: {numero}, Palo: {palo}");
     }
 
     // Ponemos la carta boca abajo

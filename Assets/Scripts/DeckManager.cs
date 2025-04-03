@@ -89,27 +89,23 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public void DrawCard(Transform playerTransform)
+    public Card DrawCard(Transform playerTransform)
     {
         if (deck.Count > 0)
         {
-            GameObject drawnCard = deck.Pop();
+            GameObject drawnCardObj = deck.Pop(); // Sacar carta del mazo
+            drawnCardObj.transform.SetParent(playerTransform); // asignarla al jugador
+            drawnCardObj.transform.localPosition = new Vector3(playerTransform.childCount * 1.5f, 0, 0);
 
-            
-
-            drawnCard.transform.SetParent(playerTransform);
-            
-
-
-            drawnCard.transform.localPosition = new Vector3(playerTransform.childCount * 1.5f, 0, 0);
-
-            Card cardScript = drawnCard.GetComponent<Card>();
-            if (cardScript != null)
+            Card drawnCard = drawnCardObj.GetComponent<Card>(); //Obtener el script de la carta
+            if (drawnCard != null)
             {
-                cardScript.faceUp = playerTransform.GetComponent<Card>().IsFaceUp();
+                drawnCard.TurnDown();
+                return drawnCard;
             }
             
         }
+        return null; // si el mazo esta vacio devolver null
     }
 
     

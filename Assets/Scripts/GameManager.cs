@@ -62,15 +62,33 @@ public class GameManager : MonoBehaviour
     {
         if (player.childCount <= 5)
         {
-            deckManager.DrawCard(player);
-            Card card = player.GetComponent<Card>();
-            card.TurnUp();
+            Card newCard = deckManager.DrawCard(player);
+            if (newCard != null)
+            {
+                UpdateCard(newCard, true); // Voltear la carta
+            }
             UpdateScores();
+            
         }
     }
 
-    
-    
+    public void PlayerDrawCardFaceDown(Transform player)
+    {
+        if (player.childCount <= 5)
+        {
+            Card newCard = deckManager.DrawCard(player);
+            if (newCard != null)
+            {
+                UpdateCard(newCard, false); // Voltear la carta
+            }
+            UpdateScores();
+
+        }
+    }
+
+
+
+
     // Update is called once per frame
     void Update()
     {
@@ -133,9 +151,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateCard(Card Card,bool faceUp)
+    public void UpdateCard(Card card,bool faceUp)
     {
-
+        if (card != null)
+        {
+            if (faceUp)
+            {
+                card.TurnUp();
+            }
+            else
+            {
+                card.TurnDown();
+            }
+        }
     }
 
 }
