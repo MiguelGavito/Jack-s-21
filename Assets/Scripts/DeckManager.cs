@@ -28,11 +28,6 @@ public class DeckManager : MonoBehaviour
     }
 
 
-    public void PruebaAddCard()
-    {
-        deck.Push(cardPrefab);
-    }
-
     void GenerateDeck()
     {
         string[] palos = { "Trebol", "Diamante", "Picas", "Corazon" };

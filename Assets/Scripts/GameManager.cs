@@ -12,8 +12,11 @@ public class GameManager : MonoBehaviour
     public Card cardManager;
     public Transform player1Transform, player2Transform, discardTansform;
 
+    // Puntajes
     public TextMeshProUGUI playerScoreText;
     public TextMeshProUGUI dealerScoreText;
+
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
