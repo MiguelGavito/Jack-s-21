@@ -6,12 +6,15 @@ using UnityEngine.UI;
 public class Card : MonoBehaviour
 {
     public string id; // ID único de la carta
-    public bool FlipUp = false; // Estado de la carta (volteada o no)
+    public bool faceUp = false; // Estado de la carta (volteada o no)
     public string palo; // Palo de la carta
     public int numero; // Número de la carta
     public Sprite cartImg; // Sprite de la carta
+    public Sprite downFace; // SPrite boca abajo
 
     //public TextMeshProUGUI textoValor; // texto mostrando su valor
+
+
 
     public void SetCard(string _palo, int _numero, string _id, Sprite _cartImg) //, string _textoValor
     {
@@ -20,6 +23,7 @@ public class Card : MonoBehaviour
         id = _id;
         cartImg = _cartImg;
 
+        /*
         Image imageComponent = GetComponentInChildren<Image>(); // obtengo el componente imagen del prefab card
         if (imageComponent != null)
         {
@@ -29,6 +33,7 @@ public class Card : MonoBehaviour
         {
             Debug.LogError("No se encontro el componente Image en la carta.");
         }
+        */
 
 
         /*
@@ -48,11 +53,34 @@ public class Card : MonoBehaviour
 
     }
 
-    //cambiaremos el estado de la carta y se volteara (mas tarde pondremos una annimacion o algo a esto pero no se como se hace eso
-    public void FlipOn()
+
+    // ponemos carta boca arriba
+    public void TurnUp()
     {
-        FlipUp = FlipUp == true ? false : true;
+        faceUp = true;
+        Image imageComponent = GetComponentInChildren<Image>();
+        imageComponent.sprite = cartImg;
+        Debug.Log($"Carta {id} volteada boca arriba. Valor: {numero}, Palo: {palo}");
     }
 
-    
+    // Ponemos la carta boca abajo
+    public void TurnDown()
+    {
+        faceUp = false;
+        Image imageComponent = GetComponentInChildren<Image>();
+        imageComponent.sprite = downFace;
+    }
+
+    // Esta boca arriba?
+    public bool IsFaceUp()
+    {
+        return faceUp;
+    }
+
+    // Esta boca abajo?
+    public bool IsFaceDown()
+    {
+        return !faceUp;
+    }
+
 }

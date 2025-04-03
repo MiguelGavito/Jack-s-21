@@ -89,11 +89,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c54978c00e94d047a8ea0f322306cf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 
+  faceUp: 0
   palo: 
   numero: 0
-  numMod: 0
-  spriteVis: {fileID: 0}
-  textoValor: {fileID: 0}
+  cartImg: {fileID: 0}
+  downFace: {fileID: -2615874204119335, guid: 2b919323de4e68c499a8cf397841447a, type: 3}
 --- !u!114 &8589154595372532414
 MonoBehaviour:
   m_ObjectHideFlags: 0
