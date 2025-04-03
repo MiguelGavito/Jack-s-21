@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class DeckManager : MonoBehaviour
 {
@@ -50,12 +51,16 @@ public class DeckManager : MonoBehaviour
                 //definir valor de numero
                 int numa = j >= 8 ? 10 : j + 2;
 
+
                 // Configurar la carta
                 Card cardComponent = newCard.GetComponent<Card>();
                 if (cardComponent != null)
                 {
                     cardComponent.SetCard(palos[i], numa, palos[i] + (j + 2).ToString(), sprite);
                 }
+
+                //Asignar imagen boca abajo prefeffinida
+                cardComponent.TurnDown();
 
                 //Necesito ponerle a la carta un componente de esto
                 // Asignar el texto del palo
@@ -90,9 +95,20 @@ public class DeckManager : MonoBehaviour
         {
             GameObject drawnCard = deck.Pop();
 
+            
+
             drawnCard.transform.SetParent(playerTransform);
+            
+
 
             drawnCard.transform.localPosition = new Vector3(playerTransform.childCount * 1.5f, 0, 0);
+
+            Card cardScript = drawnCard.GetComponent<Card>();
+            if (cardScript != null)
+            {
+                cardScript.faceUp = playerTransform.GetComponent<Card>().IsFaceUp();
+            }
+            
         }
     }
 

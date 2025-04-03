@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI dealerScoreText;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         if(instance == null)
         {
@@ -60,8 +60,13 @@ public class GameManager : MonoBehaviour
     //averiguar como llamar a esta funcion en vez de directamente a decck
     public void PlayerDrawCard(Transform player)
     {
-        deckManager.DrawCard(player);
-        UpdateScores();
+        if (player.childCount <= 5)
+        {
+            deckManager.DrawCard(player);
+            Card card = player.GetComponent<Card>();
+            card.TurnUp();
+            UpdateScores();
+        }
     }
 
     
@@ -69,6 +74,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Actualizar luego
+        //
+        //
+        //
         
         
     }
@@ -79,9 +88,14 @@ public class GameManager : MonoBehaviour
 
         foreach (Transform cardTransform in playerHand)
         {
+            
             Card card = cardTransform.GetComponent<Card>();
-            if(card != null && !card.FlipUp)
+
+            Debug.Log($"Mano {card.numero}");
+
+            if (card != null && card.faceUp)
             {
+                Debug.Log($"Mano {card.numero} y flip is {card.faceUp}");
                 totalValue += card.numero; // Suma de valor de la carta
             }
         }
@@ -117,6 +131,11 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("dealerScoreText no está asignado en GameManager.");
         }
+    }
+
+    public void UpdateCard(Card Card,bool faceUp)
+    {
+
     }
 
 }
