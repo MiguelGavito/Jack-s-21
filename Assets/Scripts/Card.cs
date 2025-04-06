@@ -9,6 +9,10 @@ public class Card : MonoBehaviour
     public bool faceUp = false; // Estado de la carta (volteada o no)
     public string palo; // Palo de la carta
     public int numero; // Número de la carta
+
+    public string rank;
+
+    
     public Sprite cartImg; // Sprite de la carta
     public Sprite downFace; // SPrite boca abajo
 
@@ -16,12 +20,13 @@ public class Card : MonoBehaviour
 
 
 
-    public void SetCard(string _palo, int _numero, string _id, Sprite _cartImg) //, string _textoValor
+    public void SetCard(string _palo, int _numero, string _id, Sprite _cartImg, string _rank) //, string _textoValor
     {
         palo = _palo;
         numero = _numero;
         id = _id;
         cartImg = _cartImg;
+        rank = _rank;
 
         /*
         Image imageComponent = GetComponentInChildren<Image>(); // obtengo el componente imagen del prefab card
@@ -83,4 +88,18 @@ public class Card : MonoBehaviour
         return !faceUp;
     }
 
+    public int GetValue()
+    {
+        return numero;
+    }
+
+    public void SetValue(int _value)
+    {
+        numero = _value;
+    }
+
+    public bool IsAce()
+    {
+        return rank == "A";
+    }
 }

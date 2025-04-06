@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Collections;
 
@@ -8,6 +9,9 @@ public enum TurnState
     DealerTurn,
     EndRound
 }
+
+
+
 
 public class EventManager : MonoBehaviour
 {
@@ -19,6 +23,8 @@ public class EventManager : MonoBehaviour
     public event Action OnEndRound;
 
     public float delayBetweenTurns = 1.5f;
+
+    public MyUIManager uiManager;
 
     private void Awake()
     {
@@ -41,11 +47,15 @@ public class EventManager : MonoBehaviour
     {
         currentTurn = TurnState.PlayerTurn;
         OnPlayerTurn?.Invoke();
+
+
+        uiManager.SetButtonsInteractable(true);
     }
 
     public void EndPlayerTurn()
     {
         StartCoroutine(TransitionToDealerTurn());
+        uiManager.SetButtonsInteractable(false);
     }
 
     private IEnumerator TransitionToDealerTurn()
@@ -58,6 +68,7 @@ public class EventManager : MonoBehaviour
     public void EndDealerTurn()
     {
         StartCoroutine(TransitionToEndRound());
+        GameManager.instance.FlipDealerCards();
     }
 
     private IEnumerator TransitionToEndRound()

@@ -120,6 +120,7 @@ MonoBehaviour:
   discardTransform: {fileID: 0}
   player1Transform: {fileID: 0}
   player2Transform: {fileID: 0}
+  cardSprites: []
 --- !u!114 &5346733609304683534
 MonoBehaviour:
   m_ObjectHideFlags: 0
