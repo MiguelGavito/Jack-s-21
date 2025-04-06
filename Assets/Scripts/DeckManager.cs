@@ -9,6 +9,7 @@ using Unity.VisualScripting;
 
 public class DeckManager : MonoBehaviour
 {
+    #region Variables
     public GameObject cardPrefab;
     public Transform deckTransform, discardTransform;
     public Transform player1Transform, player2Transform;
@@ -16,8 +17,9 @@ public class DeckManager : MonoBehaviour
     public Sprite downFace;
 
     private Stack<GameObject> deck = new Stack<GameObject>();
+    #endregion
 
-
+    #region Unity Methods
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,12 +34,9 @@ public class DeckManager : MonoBehaviour
         ShuffleDeck();
     }
 
+    #endregion
 
-    public void PruebaAddCard()
-    {
-        deck.Push(cardPrefab);
-    }
-
+    #region Deck Management
     void GenerateDeck()
     {
         string[] palos = { "Trebol", "Diamante", "Picas", "Corazon" };
@@ -111,7 +110,9 @@ public class DeckManager : MonoBehaviour
             deckList.RemoveAt(randomIndex);
         }
     }
+    #endregion
 
+    #region Card Drawing
     public Card DrawCard(Transform playerTransform)
     {
         if (deck.Count > 0)
@@ -130,6 +131,15 @@ public class DeckManager : MonoBehaviour
         return null; // Si el mazo está vacío, devolver `null`
     }
 
+    public Card DrawCardFaceDown(Transform playerTransform)
+    {
+        Card card = DrawCard(playerTransform);
+        card.TurnDown();
+        return card;
+    }
+    #endregion
+
+    #region Hand Value Calculation
     //Funcion para calcular de forma exclusiva el valor de la mano, es medio repetitivo pero no tenia nada unico
     public int CalculateRawHandValue(Transform hand)
     {
@@ -196,6 +206,9 @@ public class DeckManager : MonoBehaviour
         return count;
     }
 
+    #endregion
+
+    #region Ace Adjustment
     public void AdjustAceValue(Transform hand)
     {
         foreach (Transform cardTransform in hand)
@@ -209,7 +222,9 @@ public class DeckManager : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region Hand Managment
     public void ClearHand(Transform playerHand)
     {
         foreach (Transform cardTransform in playerHand)
@@ -217,6 +232,25 @@ public class DeckManager : MonoBehaviour
             Destroy(cardTransform.gameObject);
         }
     }
+    #endregion
+
+    #region Busted Check
+
+    public bool IsButed(Transform hand)
+    {
+        return CalculateHandValue(hand) > 21;
+    }
+
+    #endregion
+
+
+    #region Redundant Functinos
+
+    public void PruebaAddCard()
+    {
+        deck.Push(cardPrefab);
+    }
+
 
     public int CalculateHandValue(Transform hand, bool hideHoleCard = false)
     {
@@ -246,6 +280,33 @@ public class DeckManager : MonoBehaviour
 
         return value;
     }
+
+
+    public int GetHandValue(Transform hand)
+    {
+        int total = 0;
+        int aceCount = 0;
+
+        foreach (Transform cardTransform in hand)
+        {
+            Card card = cardTransform.GetComponent<Card>();
+            if (card != null && card.faceUp)
+            {
+                total += card.numero;
+                if (card.numero == 11) aceCount++;
+            }
+        }
+
+        // Ajuste por ases
+        while (total > 21 && aceCount > 0)
+        {
+            total -= 10; // Contar As como 1 en vez de 11
+            aceCount--;
+        }
+
+        return total;
+    }
+    #endregion
 
 
 }

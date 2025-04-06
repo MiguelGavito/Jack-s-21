@@ -6,27 +6,157 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    // Points and stadistics
-    public int playerGems = 100;
-    public int playerBet = 0;
+    #region Variables
+    // Referencias a botones, UI y otros elementos
+    public Button increaseBetButton;
+    public Button standButton;
+    public Button hitButton;
+
+    // Referencias a las manos del jugador y el dealer
+    public Transform playerHand, dealerHand, discardTansform;
+    public TextMeshProUGUI playerScoreText, dealerScoreText;
+    public TextMeshProUGUI winText;
+    public GameObject loseScreen;
+    public DeckManager deckManager;
+    public EventManager eventManager;
+
+    private int currentBet = 0;
+    private bool isPlayerTurn = true;
+    private bool gameOver = false;
+    #endregion
+
+    #region Unity Methods
+
+    private void Start()
+    {
+        increaseBetButton.onClick.AddListener(IncreaseBet);
+        standButton.onClick.AddListener(Stand);
+        hitButton.onClick.AddListener(Hit);
+
+        eventManager.StartRound();
+    }
+
+    void Update()
+    {
+        if (!gameOver)
+        {
+            if (isPlayerTurn)
+            {
+                playerScoreText.text = "Player: " + deckManager.CalculateHandValue(playerHand);
+            }
+            else
+            {
+                dealerScoreText.text = "Dealer: " + deckManager.CalculateHandValue(dealerHand);
+            }
+        }
+    }
+    #endregion
+
+    public void EvaluateResults()
+    {
+        int playerScore = GetPlayerHandValue(playerHand);
+        int dealerScore = GetPlayerHandValue(dealerHand);
+
+        if (playerScore > 21)
+        {
+            Debug.Log("Jugador se pasó, pierde.");
+        }
+        else if (dealerScore > 21 || playerScore > dealerScore)
+        {
+            Debug.Log("¡Jugador gana!");
+        }
+        else if (dealerScore == playerScore)
+        {
+            Debug.Log("Empate.");
+        }
+        else
+        {
+            Debug.Log("Dealer gana.");
+        }
+    }
+
+    #region Player Actions
+    public void IncreaseBet()
+    {
+        currentBet += 10;
+        Debug.Log("Apuesta aumentada a " + currentBet);
+    }
+
+    public void Stand()
+    {
+        Debug.Log("Turno del jugador finalizado.");
+        EventManager.Instance.EndPlayerTurn();
+        //StartDealerTurn(); // Iniciar el turno del dealer
+    }
+
+    public void Hit()
+    {
+        Debug.Log("Jugador pide carta");
+        PlayerDrawCard(playerHand);
+    }
+
+    #endregion
+
+    #region Round Control
+    public void SetupNewRound()
+    {
+        deckManager.ClearHand(playerHand);
+        deckManager.ClearHand(dealerHand);
+
+        // Distribuir cartas iniciales
+        eventManager.StartRound();
+    }
+
+    //public void EndTurn()
+    //{
+    //    if (isPlayerTurn)
+    //    {
+    //        isPlayerTurn = false;
+    //        eventManager.DealerTurn();
+    //    }
+    //    else
+    //    {
+    //        EndGame();
+    //    }
+    //}
+
+    public void EndGame()
+    {
+        // Lógica de fin de partida: comparar puntajes, mostrar resultados
+    }
+    #endregion
+
 
     public static GameManager instance = null;
-
+    private int playerScore, dealerScore;
+    public int playerGems = 100;
+    public int playerBet = 0;
     // Manager of the cards
-    public DeckManager deckManager;
-    public Card cardManager;
-    public Transform player1Transform, player2Transform, discardTansform;
+    //public DeckManager deckManager;
+    //public Card cardManager;
+    
 
-    // Puntajes
-    public TextMeshProUGUI playerScoreText;
-    public TextMeshProUGUI dealerScoreText;
 
     public MyUIManager uiManager;
 
-    public EventManager eventManager;
+    //public EventManager eventManager;
+
+    public int playerLives = 5;
+    //public int playerScore = 0;
+    public int scoreGoal = 100;
+    public int currentLevel = 1;
+
+
+
+
+
+    // Regiones del codigo
+    #region Inicializacion y Setup
+    // Awake, SetupNewRound, StartNewGame, etc.
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -43,7 +173,7 @@ public class GameManager : MonoBehaviour
         }
 
         deckManager = Object.FindFirstObjectByType<DeckManager>();
-        cardManager = Object.FindFirstObjectByType<Card>();
+        //cardManager = Object.FindFirstObjectByType<Card>();
 
         //FindSceneReferences();
         // Asegurar que se repartan cartas antes de actualizar el puntaje
@@ -51,27 +181,39 @@ public class GameManager : MonoBehaviour
 
 
         EventManager.Instance.OnPlayerTurn += HandlePlayerTurn;
+        EventManager.Instance.OnEndRound += EndRound;
     }
 
-    public void SetupNewRound()
+    //public void SetupNewRound()
+    //{
+    //    deckManager.ClearHand(playerHand);
+    //    deckManager.ClearHand(dealerHand);
+
+    //    PlayerDrawCard(playerHand);
+    //    PlayerDrawCard(playerHand);
+
+    //    PlayerDrawCardFaceDown(dealerHand);
+    //    PlayerDrawCard(dealerHand);
+
+    //    uiManager.UpdateHandValues();
+    //}
+
+    public void StartNewGame()
     {
-        deckManager.ClearHand(player1Transform);
-        deckManager.ClearHand(player2Transform);
+        playerScore = 0;
+        currentLevel = 1;
+        playerLives = 5;
+        playerGems = 100;
+        playerBet = 0;
 
-        PlayerDrawCard(player1Transform);
-        PlayerDrawCard(player1Transform);
-
-        PlayerDrawCardFaceDown(player2Transform);
-        PlayerDrawCard(player2Transform);
-
-        uiManager.UpdateHandValues();
+        ResetRound();
     }
 
     public void ResetRound()
     {
         // Limpiar manos
-        deckManager.ClearHand(player1Transform);
-        deckManager.ClearHand(player2Transform);
+        deckManager.ClearHand(playerHand);
+        deckManager.ClearHand(dealerHand);
 
         // Opcional: Resetear apuesta si lo manejas de forma dinámica
         // playerBet = 0;
@@ -88,16 +230,16 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f); // Un poco de delay visual
 
-        deckManager.DrawCard(player1Transform);
+        deckManager.DrawCard(playerHand);
         yield return new WaitForSeconds(0.5f);
 
-        deckManager.DrawCard(player2Transform);
+        deckManager.DrawCard(dealerHand);
         yield return new WaitForSeconds(0.5f);
 
-        deckManager.DrawCard(player1Transform);
+        deckManager.DrawCard(playerHand);
         yield return new WaitForSeconds(0.5f);
 
-        Card hiddenCard = deckManager.DrawCard(player2Transform);
+        Card hiddenCard = deckManager.DrawCard(dealerHand);
         hiddenCard?.TurnDown(); // Voltea la segunda carta del dealer
         yield return new WaitForSeconds(0.5f);
 
@@ -107,6 +249,26 @@ public class GameManager : MonoBehaviour
         // Empezar turno del jugador
         EventManager.Instance.StartRound();
     }
+
+
+    #endregion
+
+    #region Turnos
+    // PlayerTurn, DealerTurn, DealerPlays, Stand, etc.
+    #endregion
+
+    #region Puntajes
+    // GetPlayerHandValue, UpdateScores, ScoreTurn, IsBusted, etc.
+    #endregion
+
+    #region Interacción Cartas
+    // PlayerDrawCard, FlipDealerCards, etc.
+    #endregion
+
+
+
+
+
 
 
     void HandlePlayerTurn()
@@ -129,12 +291,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void Stand()
-    {
-        Debug.Log("Turno del jugador finalizado.");
-        EventManager.Instance.EndPlayerTurn();
-        //StartDealerTurn(); // Iniciar el turno del dealer
-    }
+
 
     void DelayedUpdateScores()
     {
@@ -179,16 +336,6 @@ public class GameManager : MonoBehaviour
 
 
 
-    // Update is called once per frame
-    void Update()
-    {
-        //Actualizar luego
-        //
-        //
-        //
-
-
-    }
 
     public int GetPlayerHandValue(Transform playerHand)
     {
@@ -210,16 +357,44 @@ public class GameManager : MonoBehaviour
         return totalValue;
     }
 
-
     public void UpdateScores()
     {
-        Debug.Log($"Cartas en la mano del jugador: {player1Transform.childCount}");
-        Debug.Log($"Cartas en la mano del dealer: {player2Transform.childCount}");
+        int playerScore = GetPlayerHandValue(playerHand);
+        playerScoreText.text = $"{playerScore}";
+
+        bool hasFaceDown = false;
+        foreach (Transform cardTransform in dealerHand)
+        {
+            Card card = cardTransform.GetComponent<Card>();
+            if (card != null && !card.faceUp)
+            {
+                hasFaceDown = true;
+                break;
+            }
+        }
+
+        if (hasFaceDown)
+        {
+            dealerScoreText.text = "Dealer: ?";
+        }
+        else
+        {
+            int dealerScore = GetPlayerHandValue(dealerHand);
+            dealerScoreText.text = $"Dealer: {dealerScore}";
+        }
+    }
+
+
+    /*
+    public void UpdateScores()
+    {
+        Debug.Log($"Cartas en la mano del jugador: {playerHand.childCount}");
+        Debug.Log($"Cartas en la mano del dealer: {dealerHand.childCount}");
 
         // Obtener y actualizar puntaje del jugador
         if (playerScoreText != null)
         {
-            int playerScore = GetPlayerHandValue(player1Transform);
+            int playerScore = GetPlayerHandValue(playerHand);
             Debug.Log($"Puntaje del jugador: {playerScore}");
             playerScoreText.text = playerScore.ToString();
         }
@@ -231,7 +406,7 @@ public class GameManager : MonoBehaviour
         // Obtener y actualizar puntaje del dealer
         if (dealerScoreText != null)
         {
-            int dealerScore = GetPlayerHandValue(player2Transform);
+            int dealerScore = GetPlayerHandValue(dealerHand);
             Debug.Log($"Puntaje del dealer: {dealerScore}");
             dealerScoreText.text = dealerScore.ToString();
         }
@@ -240,6 +415,7 @@ public class GameManager : MonoBehaviour
             Debug.LogError("dealerScoreText no está asignado en GameManager.");
         }
     }
+    */
 
     public void UpdateCard(Card card, bool faceUp)
     {
@@ -264,17 +440,17 @@ public class GameManager : MonoBehaviour
     void EndRound()
     {
         //Obtener el puntaje del jugador y el dealer
-        int playerScore = GetPlayerHandValue(player1Transform);
-        int dealerScore = GetPlayerHandValue(player2Transform);
+        int playerScore = deckManager.GetHandValue(playerHand);
+        int dealerScore = deckManager.GetHandValue(dealerHand);
 
         //verificar si se pasaron o no
-        if (IsBusted(player1Transform))
+        if (IsBusted(playerHand))
         {
             Debug.Log("El jugador se pasó de 21 y ha perdido.");
             // El jugador pierde
             return;
         }
-        if (IsBusted(player2Transform))
+        if (IsBusted(dealerHand))
         {
             Debug.Log("El dealer se pasó de 21, el jugador gana.");
             // El jugador gana
@@ -313,13 +489,14 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DealerPlays()
     {
-        while (GetPlayerHandValue(player2Transform) < 17)
+        FlipDealerCards(); // voltear las cartas boca abajo del dealer
+        while (GetPlayerHandValue(dealerHand) < 17)
         {
             yield return new WaitForSeconds(1f);
 
 
             // El dealer sigeu tomando cartas hasta alcanzar al menos 17
-            Card newCard = deckManager.DrawCard(player2Transform);
+            Card newCard = deckManager.DrawCard(dealerHand);
             if (newCard != null)
             {
                 UpdateCard(newCard, true); // aniadir carta boca abajo
@@ -328,7 +505,7 @@ public class GameManager : MonoBehaviour
             UpdateScores(); // Actualizar puntajes despues de tomar una carta
 
             // Si el dealer se pasa de 21 busted, termina el turno
-            if (IsBusted(player2Transform))
+            if (IsBusted(dealerHand))
             {
                 Debug.Log("El dealer se paso de 21");
                 EventManager.Instance.EndDealerTurn();
@@ -336,21 +513,21 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Una vez el dealer tiene al menos 17 puntos, voltear las cartas
-        FlipDealerCards(); // voltear las cartas boca abajo del dealer
+        
+        
         EventManager.Instance.EndDealerTurn(); //Terminar el turno del dealer
     }
 
     public void DealCardToDealer()
     {
-        PlayerDrawCardFaceDown(player2Transform);
+        PlayerDrawCardFaceDown(dealerHand);
     }
 
     public void ScoreTurn()
     {
         Debug.Log("Ronda terminada, se evaluan resultados");
-        int playerScore = GetPlayerHandValue(player1Transform);
-        int dealerScore = GetPlayerHandValue(player2Transform);
+        int playerScore = GetPlayerHandValue(playerHand);
+        int dealerScore = GetPlayerHandValue(dealerHand);
 
         if (playerScore > 21)
         {
@@ -390,7 +567,7 @@ public class GameManager : MonoBehaviour
     public void FlipDealerCards()
     {
         //Recorremos todas las cartas del dealer (su mano)
-        foreach (Transform cardTransform in player2Transform)
+        foreach (Transform cardTransform in dealerHand)
         {
             Card card = cardTransform.GetComponent<Card>();
 
@@ -419,42 +596,107 @@ public class GameManager : MonoBehaviour
 
     public void EvaluateHands()
     {
-        bool playerBusted = CheckAndAdjustIfBusted(player1Transform);
-        bool dealerBusted = CheckAndAdjustIfBusted(player1Transform);
+        bool playerBusted = CheckAndAdjustIfBusted(playerHand);
+        bool dealerBusted = CheckAndAdjustIfBusted(playerHand);
 
-        int playerValue = deckManager.CalculateHandValue(player1Transform);
-        int dealerValue = deckManager.CalculateHandValue(player2Transform);
+        int playerValue = deckManager.CalculateHandValue(playerHand);
+        int dealerValue = deckManager.CalculateHandValue(dealerHand);
 
+        if (playerBusted)
+        {
+            // mensaje de pérdida
+            playerLives--;
+        }
+        else if (dealerBusted || playerValue > dealerValue)
+        {
+            // ganó jugador
+            playerScore += 20;// puntosGanados;
+        }
+        else
+        {
+            // perdió o empate
+            playerLives--;
+        }
+
+        // luego checas si continuar
+        CheckGameProgress();
+        /*
         if (playerBusted && dealerBusted)
         {
             Debug.Log("Ambos perdieron. Empate triste ");
+            playerLives--;
         }
         else if (playerBusted)
         {
             Debug.Log("Jugador se pasó. Dealer gana.");
+            playerLives--;
         }
         else if (dealerBusted)
         {
             Debug.Log("Dealer se pasó. Jugador gana.");
+            playerLives--;
         }
         else
         {
             if (playerValue > dealerValue)
             {
                 Debug.Log("Jugador gana con " + playerValue);
+                playerScore += 20; //cambiar luego por puntosGanados
             }
             else if (dealerValue > playerValue)
             {
                 Debug.Log("Dealer gana con " + dealerValue);
+                playerLives--;
             }
             else
             {
                 Debug.Log("Empate.");
             }
         }
+        */
     }
 
+    void CheckGameProgress()
+    {
+        if(playerLives <= 0 && playerScore < scoreGoal)
+        {
+            //Perdiste
+            ShowLoseScreen();
+        } else if (playerScore >= scoreGoal)
+        {
+            // Ganaste, pasas al siguietne nivel
+            currentLevel++;
+            scoreGoal += 50;
+            playerLives = 5;
+            SetupNewRound();
+        }
+        else
+        {
+            SetupNewRound();
+        }
+    }
 
-    
+    #region Show Results
 
+    public void ShowWinScreen()
+    {
+        winText.text = "You Win!";
+        winText.gameObject.SetActive(true);
+        loseScreen.SetActive(false);  // Desactivar la pantalla de pérdida
+    }
+
+    public void ShowLoseScreen()
+    {
+        winText.text = "You Lose!";
+        winText.gameObject.SetActive(true);
+        loseScreen.SetActive(true);  // Activar la pantalla de pérdida
+    }
+
+    public void ShowDrawScreen()
+    {
+        winText.text = "It's a Draw!";
+        winText.gameObject.SetActive(true);
+        loseScreen.SetActive(false);  // Desactivar la pantalla de pérdida en caso de empate
+    }
+    #endregion
 }
