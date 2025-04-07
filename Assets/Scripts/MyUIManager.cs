@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +12,8 @@ public class MyUIManager : MonoBehaviour
     public Button dealButton;
     public GameObject pauseMenu;
 
-    public Text playerHandValueText;
-    public Text dealerHandValueText;
+    public TextMeshProUGUI playerHandValueText;
+    public TextMeshProUGUI dealerHandValueText;
     #endregion
 
     #region UI Interaction Methods

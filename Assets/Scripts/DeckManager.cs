@@ -18,6 +18,7 @@ public class DeckManager : MonoBehaviour
     public Sprite downFace;
 
     private Stack<GameObject> deck = new Stack<GameObject>();
+    public bool isInitialized = false;
     #endregion
 
     #region Initialization
@@ -29,9 +30,15 @@ public class DeckManager : MonoBehaviour
             Debug.LogError("¡La lista de sprites no tiene exactamente 52 cartas!");
             return;
         }
-
+        Debug.Log("Generar deck y revolver deck");
         GenerateDeck();
         ShuffleDeck();
+        isInitialized = true;
+    }
+
+    public bool IsInitialized()
+    {
+        return isInitialized;
     }
     #endregion
 

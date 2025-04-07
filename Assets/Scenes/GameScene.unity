@@ -2327,6 +2327,7 @@ MonoBehaviour:
   currentTurn: 0
   delayBetweenTurns: 1.5
   uiManager: {fileID: 1753055842}
+  gameManager: {fileID: 1295730458}
 --- !u!1 &1267852802
 GameObject:
   m_ObjectHideFlags: 0
@@ -2590,6 +2591,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerGems: 100
   playerBet: 0
+  lives: 5
+  puntaje: 0
+  record: 0
+  puntajeObj: 0
   deckManager: {fileID: 6816935836930464716}
   player1Transform: {fileID: 358258178902440605}
   player2Transform: {fileID: 665767949970118637}
@@ -3889,7 +3894,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: Buenos dias.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

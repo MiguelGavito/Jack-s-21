@@ -11,6 +11,14 @@ public class GameManager : MonoBehaviour
     public int playerGems = 100;
     public int playerBet = 0;
 
+    public int lives = 5;
+
+    public int puntaje = 0;
+
+    public int record = 0;
+
+    public int puntajeObj = 0;
+
     public static GameManager instance = null;
 
     public DeckManager deckManager;
@@ -67,16 +75,19 @@ public class GameManager : MonoBehaviour
 
     public void SetupNewRound()
     {
+        
         deckManager.ClearHand(player1Transform);
         deckManager.ClearHand(player2Transform);
+        Debug.Log("SetupNewRound, se limpio la mano");
+        UpdateScores();
 
         PlayerDrawCard(player1Transform);
         PlayerDrawCard(player1Transform);
 
         PlayerDrawCardFaceDown(player2Transform);
         PlayerDrawCard(player2Transform);
-
-        uiManager.UpdateHandValues();
+        Debug.Log("Para este punto deben estar las cartas en su lugar");
+        
     }
 
     public void ResetRound()
@@ -106,7 +117,7 @@ public class GameManager : MonoBehaviour
         hiddenCard?.TurnDown();
         yield return new WaitForSeconds(0.5f);
 
-        uiManager.UpdateHandValues();
+        //uiManager.UpdateHandValues();
         EventManager.Instance.StartRound();
     }
 
@@ -142,6 +153,8 @@ public class GameManager : MonoBehaviour
                 UpdateCard(newCard, true);
             }
 
+
+            //quitar luego
             bool bustCheck = CheckAndAdjustIfBusted(player);
             UpdateScores();
 
@@ -296,18 +309,23 @@ public class GameManager : MonoBehaviour
         int playerScore = GetPlayerHandValue(player1Transform);
         int dealerScore = GetPlayerHandValue(player2Transform);
 
-        if (IsBusted(player1Transform))
+        bool playerBust = IsBusted(player1Transform);
+        bool dealerBust = IsBusted(player2Transform);
+
+        if (playerBust && dealerBust)
+        {
+            Debug.Log("Ambos se pasaron de 21. Nadie gana.");
+        }
+        else if (playerBust)
         {
             Debug.Log("El jugador se pasó de 21 y ha perdido.");
-            return;
+            lives--;
         }
-        if (IsBusted(player2Transform))
+        else if (dealerBust)
         {
             Debug.Log("El dealer se pasó de 21, el jugador gana.");
-            return;
         }
-
-        if (playerScore > dealerScore)
+        else if (playerScore > dealerScore)
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
         }
@@ -319,6 +337,22 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Es un empate.");
         }
+
+        if (lives > 0)
+        {
+            Debug.Log("Preparando nueva ronda...");
+            StartCoroutine(DelayedStartRound());
+        }
+        else
+        {
+            Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
+        }
+    }
+
+    private IEnumerator DelayedStartRound()
+    {
+        yield return new WaitForSeconds(1f);
+        eventManager.StartRound();
     }
 
     #endregion
