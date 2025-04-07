@@ -1,27 +1,35 @@
-using TMPro;
+using System.Collections;
 using UnityEngine;
+using TMPro;
+
+// HAY QUE CORREGIR EL ERROR DE QUE EL DEALER NO REDUCE EL VALOR DE SU AS EN CASO DE NECESITARLO
 
 public class GameManager : MonoBehaviour
 {
-    // Points and stadistics
-    public int Gemas;
+    #region Variables Generales
+
+    public int playerGems = 100;
+    public int playerBet = 0;
+
     public static GameManager instance = null;
 
-    // Manager of the cards
     public DeckManager deckManager;
-    public Card cardManager;
+    // public Card cardManager;
     public Transform player1Transform, player2Transform, discardTansform;
 
-    // Puntajes
     public TextMeshProUGUI playerScoreText;
     public TextMeshProUGUI dealerScoreText;
 
-    
+    public MyUIManager uiManager;
+    public EventManager eventManager;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    #endregion
+
+    #region Inicialización
+
     void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
@@ -29,38 +37,101 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            //return;
         }
 
         deckManager = Object.FindFirstObjectByType<DeckManager>();
-        cardManager = Object.FindFirstObjectByType<Card>();
+        // cardManager = Object.FindFirstObjectByType<Card>();
 
-        //FindSceneReferences();
-        // Asegurar que se repartan cartas antes de actualizar el puntaje
-        Invoke("DelayedUpdateScores", 0.5f); // Espera 0.5 segundos
+        Invoke("DelayedUpdateScores", 0.5f);
+        EventManager.Instance.OnPlayerTurn += HandlePlayerTurn;
     }
 
-
-    /*
-    // Despues pasare estos codigos para manejar los score y todo eso a un CardManager
-    public void FindSceneReferences()
+    private void OnEnable()
     {
-        deckManager = Object.FindFirstObjectByType<DeckManager>();
-        cardManager = Object.FindAnyObjectByType<Card>();
-
-        player1Transform = GameObject.Find("Player1Hand")?.transform;
-        player2Transform = GameObject.Find("Player2Hand")?.transform;
-
-        playerScoreText = GameObject.Find("Player Scor")
+        EventManager.Instance.OnPlayerTurn += PlayerTurn;
+        EventManager.Instance.OnDealerTurn += DealerTurn;
+        EventManager.Instance.OnEndRound += EndRound;
     }
-    */
 
-    void DelayedUpdateScores()
+    private void OnDisable()
     {
-        UpdateScores();
+        if (EventManager.Instance == null) return;
+        EventManager.Instance.OnPlayerTurn -= PlayerTurn;
+        EventManager.Instance.OnDealerTurn -= DealerTurn;
+        EventManager.Instance.OnEndRound -= EndRound;
     }
 
-    //averiguar como llamar a esta funcion en vez de directamente a decck
+    #endregion
+
+    #region Rondas
+
+    public void SetupNewRound()
+    {
+        deckManager.ClearHand(player1Transform);
+        deckManager.ClearHand(player2Transform);
+
+        PlayerDrawCard(player1Transform);
+        PlayerDrawCard(player1Transform);
+
+        PlayerDrawCardFaceDown(player2Transform);
+        PlayerDrawCard(player2Transform);
+
+        uiManager.UpdateHandValues();
+    }
+
+    public void ResetRound()
+    {
+        deckManager.ClearHand(player1Transform);
+        deckManager.ClearHand(player2Transform);
+
+        playerScoreText.text = "Jugador: 0";
+        dealerScoreText.text = "Dealer: ?";
+
+        StartCoroutine(DealInitialCards());
+    }
+
+    public IEnumerator DealInitialCards()
+    {
+        yield return new WaitForSeconds(1f);
+        deckManager.DrawCard(player1Transform);
+        yield return new WaitForSeconds(0.5f);
+
+        deckManager.DrawCard(player2Transform);
+        yield return new WaitForSeconds(0.5f);
+
+        deckManager.DrawCard(player1Transform);
+        yield return new WaitForSeconds(0.5f);
+
+        Card hiddenCard = deckManager.DrawCard(player2Transform);
+        hiddenCard?.TurnDown();
+        yield return new WaitForSeconds(0.5f);
+
+        uiManager.UpdateHandValues();
+        EventManager.Instance.StartRound();
+    }
+
+    #endregion
+
+    #region Apuestas
+
+    public void IncreaseBet(int amount)
+    {
+        if (playerGems >= amount)
+        {
+            playerGems -= amount;
+            playerBet += amount;
+            Debug.Log($"Apuesta aumentada en {amount}. Nueva apuesta: {playerBet}. Gemas restantes: {playerGems}");
+        }
+        else
+        {
+            Debug.Log("No tienes suficientes gemas para aumentar la apuesta.");
+        }
+    }
+
+    #endregion
+
+    #region Cartas
+
     public void PlayerDrawCard(Transform player)
     {
         if (player.childCount <= 5)
@@ -68,10 +139,17 @@ public class GameManager : MonoBehaviour
             Card newCard = deckManager.DrawCard(player);
             if (newCard != null)
             {
-                UpdateCard(newCard, true); // Voltear la carta
+                UpdateCard(newCard, true);
             }
+
+            bool bustCheck = CheckAndAdjustIfBusted(player);
             UpdateScores();
-            
+
+            if (IsBusted(player))
+            {
+                Debug.Log("El jugador se paso de 21. Fin de turno en auto");
+                EventManager.Instance.EndPlayerTurn();
+            }
         }
     }
 
@@ -82,91 +160,166 @@ public class GameManager : MonoBehaviour
             Card newCard = deckManager.DrawCard(player);
             if (newCard != null)
             {
-                UpdateCard(newCard, false); // Voltear la carta
+                UpdateCard(newCard, false);
             }
             UpdateScores();
-
         }
     }
 
-
-
-
-    // Update is called once per frame
-    void Update()
+    public void UpdateCard(Card card, bool faceUp)
     {
-        //Actualizar luego
-        //
-        //
-        //
-        
-        
+        if (card != null)
+        {
+            if (faceUp) card.TurnUp();
+            else card.TurnDown();
+        }
+    }
+
+    public void FlipDealerCards()
+    {
+        foreach (Transform cardTransform in player2Transform)
+        {
+            Card card = cardTransform.GetComponent<Card>();
+            if (card != null && card.IsFaceDown()) card.TurnUp();
+        }
+    }
+
+    #endregion
+
+    #region Puntajes
+
+    public void UpdateScores()
+    {
+        if (playerScoreText != null)
+        {
+            int playerScore = GetPlayerHandValue(player1Transform);
+            playerScoreText.text = playerScore.ToString();
+        }
+        else Debug.LogError("playerScoreText no está asignado en GameManager.");
+
+        if (dealerScoreText != null)
+        {
+            int dealerScore = GetPlayerHandValue(player2Transform);
+            dealerScoreText.text = dealerScore.ToString();
+        }
+        else Debug.LogError("dealerScoreText no está asignado en GameManager.");
+    }
+
+    void DelayedUpdateScores()
+    {
+        UpdateScores();
     }
 
     public int GetPlayerHandValue(Transform playerHand)
     {
         int totalValue = 0;
-
         foreach (Transform cardTransform in playerHand)
         {
-            
             Card card = cardTransform.GetComponent<Card>();
-
-            Debug.Log($"Mano {card.numero}");
-
             if (card != null && card.faceUp)
             {
-                Debug.Log($"Mano {card.numero} y flip is {card.faceUp}");
-                totalValue += card.numero; // Suma de valor de la carta
+                totalValue += card.numero;
             }
         }
         return totalValue;
     }
 
-
-    public void UpdateScores()
+    public bool IsBusted(Transform playerHand)
     {
-        Debug.Log($"Cartas en la mano del jugador: {player1Transform.childCount}");
-        Debug.Log($"Cartas en la mano del dealer: {player2Transform.childCount}");
+        return GetPlayerHandValue(playerHand) > 21;
+    }
 
-        // Obtener y actualizar puntaje del jugador
-        if (playerScoreText != null)
+    public bool CheckAndAdjustIfBusted(Transform hand)
+    {
+        int total = deckManager.CalculateRawHandValue(hand);
+
+        while (total > 21 && deckManager.CountAces(hand) > 0)
         {
-            int playerScore = GetPlayerHandValue(player1Transform);
-            Debug.Log($"Puntaje del jugador: {playerScore}");
-            playerScoreText.text = playerScore.ToString(); 
+            deckManager.AdjustAceValue(hand);
+            total = deckManager.CalculateRawHandValue(hand);
+        }
+
+        return total > 21;
+    }
+
+    #endregion
+
+    #region Turnos
+
+    void HandlePlayerTurn()
+    {
+        Debug.Log("Es el turno del jugador. Puede robar cartas o plantarse.");
+    }
+
+    public void PlayerTurn()
+    {
+        Debug.Log("Empieza turno del jugador");
+    }
+
+    public void DealerTurn()
+    {
+        Debug.Log("Empieza turno del dealer");
+        StartCoroutine(DealerPlays());
+    }
+
+    private IEnumerator DealerPlays()
+    {
+        while (GetPlayerHandValue(player2Transform) < 17)
+        {
+            yield return new WaitForSeconds(1f);
+
+            Card newCard = deckManager.DrawCard(player2Transform);
+            if (newCard != null) UpdateCard(newCard, true);
+
+            UpdateScores();
+
+            if (IsBusted(player2Transform))
+            {
+                Debug.Log("El dealer se pasó de 21");
+                EventManager.Instance.EndDealerTurn();
+                yield break;
+            }
+        }
+
+        FlipDealerCards();
+        EventManager.Instance.EndDealerTurn();
+    }
+
+    public void Stand()
+    {
+        Debug.Log("Turno del jugador finalizado.");
+        EventManager.Instance.EndPlayerTurn();
+    }
+
+    void EndRound()
+    {
+        int playerScore = GetPlayerHandValue(player1Transform);
+        int dealerScore = GetPlayerHandValue(player2Transform);
+
+        if (IsBusted(player1Transform))
+        {
+            Debug.Log("El jugador se pasó de 21 y ha perdido.");
+            return;
+        }
+        if (IsBusted(player2Transform))
+        {
+            Debug.Log("El dealer se pasó de 21, el jugador gana.");
+            return;
+        }
+
+        if (playerScore > dealerScore)
+        {
+            Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
+        }
+        else if (playerScore < dealerScore)
+        {
+            Debug.Log($"El dealer gana con {dealerScore} puntos contra {playerScore} del jugador.");
         }
         else
         {
-            Debug.LogError("playerScoreText no está asignado en GameManager.");
-        }
-
-        // Obtener y actualizar puntaje del dealer
-        if (dealerScoreText != null)
-        {
-            int dealerScore = GetPlayerHandValue(player2Transform);
-            Debug.Log($"Puntaje del dealer: {dealerScore}");
-            dealerScoreText.text = dealerScore.ToString();
-        }
-        else
-        {
-            Debug.LogError("dealerScoreText no está asignado en GameManager.");
+            Debug.Log("Es un empate.");
         }
     }
 
-    public void UpdateCard(Card card,bool faceUp)
-    {
-        if (card != null)
-        {
-            if (faceUp)
-            {
-                card.TurnUp();
-            }
-            else
-            {
-                card.TurnDown();
-            }
-        }
-    }
-
+    #endregion
 }
