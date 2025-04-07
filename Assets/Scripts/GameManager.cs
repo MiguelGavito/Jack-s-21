@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance = null;
 
     public DeckManager deckManager;
-    public Card cardManager;
+    // public Card cardManager;
     public Transform player1Transform, player2Transform, discardTansform;
 
     public TextMeshProUGUI playerScoreText;
@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         }
 
         deckManager = Object.FindFirstObjectByType<DeckManager>();
-        cardManager = Object.FindFirstObjectByType<Card>();
+        // cardManager = Object.FindFirstObjectByType<Card>();
 
         Invoke("DelayedUpdateScores", 0.5f);
         EventManager.Instance.OnPlayerTurn += HandlePlayerTurn;
