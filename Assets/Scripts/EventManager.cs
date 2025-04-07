@@ -10,11 +10,10 @@ public enum TurnState
     EndRound
 }
 
-
-
-
 public class EventManager : MonoBehaviour
 {
+    #region Variables
+    // Variables públicas del EventManager
     public static EventManager Instance;
     public TurnState currentTurn;
 
@@ -25,7 +24,10 @@ public class EventManager : MonoBehaviour
     public float delayBetweenTurns = 1.5f;
 
     public MyUIManager uiManager;
+    #endregion
 
+    #region Initialization
+    // Métodos de inicialización
     private void Awake()
     {
         if (Instance == null)
@@ -42,13 +44,14 @@ public class EventManager : MonoBehaviour
     {
         StartRound();
     }
+    #endregion
 
+    #region Round Management
+    // Métodos para manejar los turnos y rondas
     public void StartRound()
     {
         currentTurn = TurnState.PlayerTurn;
         OnPlayerTurn?.Invoke();
-
-
         uiManager.SetButtonsInteractable(true);
     }
 
@@ -77,4 +80,5 @@ public class EventManager : MonoBehaviour
         currentTurn = TurnState.EndRound;
         OnEndRound?.Invoke();
     }
+    #endregion
 }

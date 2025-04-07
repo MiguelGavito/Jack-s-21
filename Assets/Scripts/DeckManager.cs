@@ -9,6 +9,8 @@ using Unity.VisualScripting;
 
 public class DeckManager : MonoBehaviour
 {
+    #region Variables
+    // Variables públicas para las cartas y transformaciones de los jugadores y mazo
     public GameObject cardPrefab;
     public Transform deckTransform, discardTransform;
     public Transform player1Transform, player2Transform;
@@ -16,10 +18,10 @@ public class DeckManager : MonoBehaviour
     public Sprite downFace;
 
     private Stack<GameObject> deck = new Stack<GameObject>();
+    #endregion
 
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    #region Initialization
+    // Métodos relacionados con la inicialización y configuración
     void Start()
     {
         if (cardSprites.Count != 52)
@@ -31,13 +33,10 @@ public class DeckManager : MonoBehaviour
         GenerateDeck();
         ShuffleDeck();
     }
+    #endregion
 
-
-    public void PruebaAddCard()
-    {
-        deck.Push(cardPrefab);
-    }
-
+    #region Deck Management
+    // Métodos relacionados con la creación, generación y barajado del mazo
     void GenerateDeck()
     {
         string[] palos = { "Trebol", "Diamante", "Picas", "Corazon" };
@@ -50,10 +49,10 @@ public class DeckManager : MonoBehaviour
                 GameObject newCard = Instantiate(cardPrefab, deckTransform);
                 int index = i * 13 + j; // indice de la carta en mi lista
 
-                // Obterner sprite directamente de la lista
+                // Obtener sprite directamente de la lista
                 Sprite sprite = cardSprites[index];
 
-                //definir valor de numero
+                // Definir valor de número y nombre
                 string rank = "";
                 int numa = 0;
 
@@ -83,7 +82,6 @@ public class DeckManager : MonoBehaviour
                     numa = 11;
                 }
 
-
                 // Configurar la carta
                 Card cardComponent = newCard.GetComponent<Card>();
                 if (cardComponent != null)
@@ -96,7 +94,6 @@ public class DeckManager : MonoBehaviour
                 deck.Push(newCard);
             }
         }
-
     }
 
     void ShuffleDeck()
@@ -111,7 +108,10 @@ public class DeckManager : MonoBehaviour
             deckList.RemoveAt(randomIndex);
         }
     }
+    #endregion
 
+    #region Card Drawing
+    // Métodos relacionados con el robo de cartas
     public Card DrawCard(Transform playerTransform)
     {
         if (deck.Count > 0)
@@ -129,8 +129,10 @@ public class DeckManager : MonoBehaviour
         }
         return null; // Si el mazo está vacío, devolver `null`
     }
+    #endregion
 
-    //Funcion para calcular de forma exclusiva el valor de la mano, es medio repetitivo pero no tenia nada unico
+    #region Hand Value Calculations
+    // Métodos relacionados con el cálculo del valor de la mano
     public int CalculateRawHandValue(Transform hand)
     {
         int total = 0;
@@ -176,7 +178,6 @@ public class DeckManager : MonoBehaviour
         }
 
         return total;
-
     }
 
     // Contador de ases en la mano
@@ -209,7 +210,10 @@ public class DeckManager : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region Hand Management
+    // Métodos relacionados con la gestión de la mano
     public void ClearHand(Transform playerHand)
     {
         foreach (Transform cardTransform in playerHand)
@@ -246,6 +250,5 @@ public class DeckManager : MonoBehaviour
 
         return value;
     }
-
-
+    #endregion
 }
