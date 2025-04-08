@@ -1909,11 +1909,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1295730458}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: PlayerDrawCard
-        m_Mode: 2
+        m_MethodName: OnHitButtonPressed
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 358258178902440605}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2328,6 +2328,7 @@ MonoBehaviour:
   delayBetweenTurns: 1.5
   uiManager: {fileID: 1753055842}
   gameManager: {fileID: 1295730458}
+  deckManager: {fileID: 0}
 --- !u!1 &1267852802
 GameObject:
   m_ObjectHideFlags: 0

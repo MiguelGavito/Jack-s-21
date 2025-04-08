@@ -76,7 +76,8 @@ public class EventManager : MonoBehaviour
         SetCurrentTurn(TurnState.PlayerTurn);
 
 
-
+        //Aqui entra el error, justo aqui crashea y no me deja, algo sucede y no se limpian las manos y eso genera un fallo.
+        gameManager.LimpiarManos();
         gameManager.SetupNewRound(); // toma 2 cartas player
         Debug.Log("Empieza StartRound se va aejecutar SetupNewRound y se robaran 2 cartas del jugador y dos para el dealer");
         

@@ -225,6 +225,7 @@ public class DeckManager : MonoBehaviour
     {
         foreach (Transform cardTransform in playerHand)
         {
+            Debug.Log($"Destruyendo carta: {cardTransform.name}");
             Destroy(cardTransform.gameObject);
         }
     }

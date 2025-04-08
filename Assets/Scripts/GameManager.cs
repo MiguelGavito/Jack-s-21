@@ -73,19 +73,26 @@ public class GameManager : MonoBehaviour
 
     #region Rondas
 
+    public void LimpiarManos()
+    {
+        deckManager.ClearHand(player1Transform);
+        deckManager.ClearHand(player2Transform);
+        Debug.Log("Limpiar Manos, se limpio la mano");
+        UpdateScores();
+    }
+
+    //Esta funcion genera muchos problemas, creo que hasta convendria quitarla pero pierde sentido la modulacion si asi lo hago
     public void SetupNewRound()
     {
         
-        deckManager.ClearHand(player1Transform);
-        deckManager.ClearHand(player2Transform);
-        Debug.Log("SetupNewRound, se limpio la mano");
-        UpdateScores();
+        
 
         PlayerDrawCard(player1Transform);
         PlayerDrawCard(player1Transform);
 
         PlayerDrawCardFaceDown(player2Transform);
         PlayerDrawCard(player2Transform);
+
         Debug.Log("Para este punto deben estar las cartas en su lugar");
         
     }
@@ -153,16 +160,10 @@ public class GameManager : MonoBehaviour
                 UpdateCard(newCard, true);
             }
 
-
-            //quitar luego
-            bool bustCheck = CheckAndAdjustIfBusted(player);
+            
+            
             UpdateScores();
 
-            if (IsBusted(player))
-            {
-                Debug.Log("El jugador se paso de 21. Fin de turno en auto");
-                EventManager.Instance.EndPlayerTurn();
-            }
         }
     }
 
@@ -197,6 +198,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void EndPlayerTurnIfBusted(Transform player)
+    {
+        // Chequea si el jugador se ha pasado de 21 y termina el turno
+        if (IsBusted(player))
+        {
+            Debug.Log("El jugador se pasó de 21. Fin de turno en automático");
+            EventManager.Instance.EndPlayerTurn();
+        }
+    }
     #endregion
 
     #region Puntajes
@@ -277,6 +287,10 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DealerPlays()
     {
+        FlipDealerCards();
+
+        yield return new WaitForSeconds(1f);
+
         while (GetPlayerHandValue(player2Transform) < 17)
         {
             yield return new WaitForSeconds(1f);
@@ -286,15 +300,18 @@ public class GameManager : MonoBehaviour
 
             UpdateScores();
 
-            if (IsBusted(player2Transform))
+            bool busted = CheckAndAdjustIfBusted(player2Transform);
+            UpdateScores();
+
+            if (busted)
             {
-                Debug.Log("El dealer se pasó de 21");
+                Debug.Log("El dealer se pasó de 21(incluso con ajustes de ases)");
                 EventManager.Instance.EndDealerTurn();
                 yield break;
             }
         }
 
-        FlipDealerCards();
+        
         EventManager.Instance.EndDealerTurn();
     }
 
@@ -306,11 +323,14 @@ public class GameManager : MonoBehaviour
 
     void EndRound()
     {
+        UpdateScores();
         int playerScore = GetPlayerHandValue(player1Transform);
         int dealerScore = GetPlayerHandValue(player2Transform);
 
         bool playerBust = IsBusted(player1Transform);
         bool dealerBust = IsBusted(player2Transform);
+
+        UpdateScores();
 
         if (playerBust && dealerBust)
         {
@@ -353,6 +373,17 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         eventManager.StartRound();
+    }
+
+    #endregion
+
+    #region Receptores
+
+    public void OnHitButtonPressed()
+    {
+        PlayerDrawCard(player1Transform);
+        UpdateScores();
+        EndPlayerTurnIfBusted(player1Transform);
     }
 
     #endregion
