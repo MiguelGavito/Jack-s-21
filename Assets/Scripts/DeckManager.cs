@@ -118,6 +118,29 @@ public class DeckManager : MonoBehaviour
     #endregion
 
     #region Card Drawing
+    
+    //Funcion para mover cartas entre transforms
+    public Card MoveCard(Transform StartTransform, Transform EndTransform, int index)
+    {
+        if (StartTransform.childCount > index)
+        {
+            Transform cardTransform = StartTransform.GetChild(index);
+
+            cardTransform.SetParent(EndTransform);
+
+            cardTransform.localPosition = new Vector3(EndTransform.childCount * 1.5f, 0, 0);
+
+            // Obtener el componente Card de la carta movida
+            Card card = cardTransform.GetComponent<Card>();
+            if (card != null)
+            {
+                // Aquí puedes agregar alguna acción adicional si la carta se ha movido correctamente
+                return card;
+            }
+        }
+        return null;
+    }
+    
     // Métodos relacionados con el robo de cartas
     public Card DrawCard(Transform playerTransform)
     {
@@ -136,6 +159,32 @@ public class DeckManager : MonoBehaviour
         }
         return null; // Si el mazo está vacío, devolver `null`
     }
+    #endregion
+
+    #region Cards manage
+
+    public Card TakeCardFromHand(Transform handTransform, Transform targetTransform, bool fromEnd = false)
+    {
+        if (handTransform.childCount > 0)
+        {
+            Transform cardTransform = fromEnd
+                ? handTransform.GetChild(handTransform.childCount - 1) // Última carta
+                : handTransform.GetChild(0); // Primera carta
+
+            cardTransform.SetParent(targetTransform);
+            cardTransform.localPosition = new Vector3(targetTransform.childCount * 1.5f, 0, 0);
+
+            Card card = cardTransform.GetComponent<Card>();
+            if (card != null)
+            {
+                card.TurnDown(); // o card.TurnUp() según el contexto
+                return card;
+            }
+        }
+        return null;
+    }
+
+
     #endregion
 
     #region Hand Value Calculations
@@ -225,7 +274,7 @@ public class DeckManager : MonoBehaviour
     {
         foreach (Transform cardTransform in playerHand)
         {
-            Debug.Log($"Destruyendo carta: {cardTransform.name}");
+            Debug.Log($"Destruyendo carta: {cardTransform.name} de {playerHand.name}");
             Destroy(cardTransform.gameObject);
         }
     }

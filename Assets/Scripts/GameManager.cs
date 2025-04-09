@@ -75,27 +75,57 @@ public class GameManager : MonoBehaviour
 
     public void LimpiarManos()
     {
-        deckManager.ClearHand(player1Transform);
-        deckManager.ClearHand(player2Transform);
         Debug.Log("Limpiar Manos, se limpio la mano");
+
+        //deckManager.ClearHand(player1Transform);
+        //deckManager.ClearHand(player2Transform);
+
+        DiscardCard(player2Transform);
+        DiscardCard(player1Transform);
+
         UpdateScores();
     }
 
     //Esta funcion genera muchos problemas, creo que hasta convendria quitarla pero pierde sentido la modulacion si asi lo hago
-    public void SetupNewRound()
+    public void StartNewRound()
     {
-        
-        
+        Debug.Log("startnweround ejecuta setupnewroundcoroutine");
+        //StartCoroutine(SetupNewRoundCoroutine());
+        PlayerDrawCard(player1Transform);
+        //yield return new WaitForSeconds(1f); // o incluso 0.01f puede servir
 
         PlayerDrawCard(player1Transform);
-        PlayerDrawCard(player1Transform);
+        //yield return new WaitForSeconds(1f);
 
         PlayerDrawCardFaceDown(player2Transform);
+        //yield return new WaitForSeconds(1f);
+
         PlayerDrawCard(player2Transform);
+        //yield return new WaitForSeconds(1f);
+    }
+
+    private IEnumerator SetupNewRoundCoroutine()
+    {
+        
+
+        PlayerDrawCard(player1Transform);
+        yield return new WaitForSeconds(1f); // o incluso 0.01f puede servir
+
+        PlayerDrawCard(player1Transform);
+        //yield return new WaitForSeconds(1f);
+
+        PlayerDrawCardFaceDown(player2Transform);
+        //yield return new WaitForSeconds(1f);
+
+        PlayerDrawCard(player2Transform);
+        //yield return new WaitForSeconds(1f);
+
+        UpdateScores();
 
         Debug.Log("Para este punto deben estar las cartas en su lugar");
-        
     }
+
+
 
     public void ResetRound()
     {
@@ -111,21 +141,20 @@ public class GameManager : MonoBehaviour
     public IEnumerator DealInitialCards()
     {
         yield return new WaitForSeconds(1f);
-        deckManager.DrawCard(player1Transform);
+        PlayerDrawCard(player1Transform);
         yield return new WaitForSeconds(0.5f);
 
-        deckManager.DrawCard(player2Transform);
+        PlayerDrawCard(player2Transform);
         yield return new WaitForSeconds(0.5f);
 
-        deckManager.DrawCard(player1Transform);
+        PlayerDrawCard(player1Transform);
         yield return new WaitForSeconds(0.5f);
 
-        Card hiddenCard = deckManager.DrawCard(player2Transform);
-        hiddenCard?.TurnDown();
+        PlayerDrawCardFaceDown(player2Transform);
         yield return new WaitForSeconds(0.5f);
 
         //uiManager.UpdateHandValues();
-        EventManager.Instance.StartRound();
+        // EventManager.Instance.StartRound();
     }
 
     #endregion
@@ -150,8 +179,17 @@ public class GameManager : MonoBehaviour
 
     #region Cartas
 
+    public void DiscardCard(Transform player) 
+    {
+        while (player.childCount > 0)
+        {
+            deckManager.TakeCardFromHand(player, discardTansform);
+        }
+    }
+
     public void PlayerDrawCard(Transform player)
     {
+        Debug.Log($"Robar una carta a {player}");
         if (player.childCount <= 5)
         {
             Card newCard = deckManager.DrawCard(player);
@@ -159,12 +197,8 @@ public class GameManager : MonoBehaviour
             {
                 UpdateCard(newCard, true);
             }
-
-            
-            
-            UpdateScores();
-
         }
+        UpdateScores();
     }
 
     public void PlayerDrawCardFaceDown(Transform player)
@@ -176,8 +210,9 @@ public class GameManager : MonoBehaviour
             {
                 UpdateCard(newCard, false);
             }
-            UpdateScores();
+            
         }
+        // UpdateScores();
     }
 
     public void UpdateCard(Card card, bool faceUp)
@@ -236,14 +271,28 @@ public class GameManager : MonoBehaviour
     public int GetPlayerHandValue(Transform playerHand)
     {
         int totalValue = 0;
+        int aceCount = 0;
+
         foreach (Transform cardTransform in playerHand)
         {
             Card card = cardTransform.GetComponent<Card>();
             if (card != null && card.faceUp)
             {
                 totalValue += card.numero;
+                if (card.numero == 11 && card.IsAce()) // As que vale 11
+                {
+                    aceCount++;
+                }
             }
         }
+
+        // Ajustar ases de 11 a 1 si el total se pasa de 21
+        while (totalValue > 21 && aceCount > 0)
+        {
+            totalValue -= 10; // convierte un As de 11 a 1
+            aceCount--;
+        }
+
         return totalValue;
     }
 

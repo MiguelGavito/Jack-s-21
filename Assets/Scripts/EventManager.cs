@@ -78,12 +78,12 @@ public class EventManager : MonoBehaviour
 
         //Aqui entra el error, justo aqui crashea y no me deja, algo sucede y no se limpian las manos y eso genera un fallo.
         gameManager.LimpiarManos();
-        gameManager.SetupNewRound(); // toma 2 cartas player
+        gameManager.StartNewRound(); // toma 2 cartas player
         Debug.Log("Empieza StartRound se va aejecutar SetupNewRound y se robaran 2 cartas del jugador y dos para el dealer");
-        
+        Debug.Log("antes de esto se llama el StartNewRound pero no se roba bien hasta luego de esto");
         OnPlayerTurn?.Invoke();
         
-        
+        gameManager.UpdateScores();
         uiManager.SetButtonsInteractable(true);
     }
 
@@ -98,6 +98,7 @@ public class EventManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayBetweenTurns);
         gameManager.FlipDealerCards(); // girar las cartas del dealer
+        gameManager.UpdateScores(); // actualizamos los scores
         currentTurn = TurnState.DealerTurn;
         OnDealerTurn?.Invoke();
     }
@@ -121,6 +122,7 @@ public class EventManager : MonoBehaviour
         // Agregar una bandera para evitar iniciar otra ronda si ya está en curso
         if (currentTurn != TurnState.EndRound)
         {
+            
             StartRound();  // Solo reiniciar la ronda si estamos en el estado adecuado
         }
     }
