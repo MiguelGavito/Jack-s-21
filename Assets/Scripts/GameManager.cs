@@ -393,18 +393,22 @@ public class GameManager : MonoBehaviour
         else if (dealerBust)
         {
             Debug.Log("El dealer se pasó de 21, el jugador gana.");
+            puntaje += 20;
         }
         else if (playerScore > dealerScore)
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
+            puntaje += playerScore - dealerScore + 20;
         }
         else if (playerScore < dealerScore)
         {
             Debug.Log($"El dealer gana con {dealerScore} puntos contra {playerScore} del jugador.");
+            lives--;
         }
         else
         {
             Debug.Log("Es un empate.");
+            puntaje += 5;
         }
 
         if (lives > 0)
@@ -416,6 +420,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
         }
+        
     }
 
     private IEnumerator DelayedStartRound()

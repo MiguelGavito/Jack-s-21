@@ -35,10 +35,16 @@ public class DeckManager : MonoBehaviour
         ShuffleDeck();
         isInitialized = true;
     }
+    
 
     public bool IsInitialized()
     {
         return isInitialized;
+    }
+
+    public bool IsEmpty()
+    {
+        return cardSprites.Count == 0;
     }
     #endregion
 
@@ -156,6 +162,13 @@ public class DeckManager : MonoBehaviour
                 drawnCard.TurnDown(); // Asegurar que inicia boca abajo
                 return drawnCard; // Devolver la carta para que `GameManager` la pueda modificar
             }
+        }
+        else
+        {
+//Revisar luego
+            GenerateDeck();
+            ShuffleDeck();
+            DrawCard(playerTransform);
         }
         return null; // Si el mazo está vacío, devolver `null`
     }

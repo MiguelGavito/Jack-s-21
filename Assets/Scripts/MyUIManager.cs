@@ -14,6 +14,15 @@ public class MyUIManager : MonoBehaviour
 
     public TextMeshProUGUI playerHandValueText;
     public TextMeshProUGUI dealerHandValueText;
+
+    public TextMeshProUGUI ScoreUIText;
+    public TextMeshProUGUI ObjScoreUIText;
+
+    public TextMeshProUGUI RecordText;
+    public TextMeshProUGUI HandsText;
+
+    public GameManager manager;
+
     #endregion
 
     #region UI Interaction Methods
@@ -52,5 +61,16 @@ public class MyUIManager : MonoBehaviour
             dealerHandValueText.text = "Dealer: ?";
         }
     }
+    #endregion
+
+    #region Data UI Updates
+
+    void Update()
+    {
+        ScoreUIText.SetText(manager.puntaje.ToString());
+
+        HandsText.SetText(manager.lives.ToString());
+    }
+
     #endregion
 }
