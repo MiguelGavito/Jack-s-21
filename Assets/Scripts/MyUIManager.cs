@@ -70,6 +70,8 @@ public class MyUIManager : MonoBehaviour
         ScoreUIText.SetText(manager.puntaje.ToString());
 
         HandsText.SetText(manager.lives.ToString());
+
+        ObjScoreUIText.SetText(manager.puntajeObj.ToString());
     }
 
     #endregion

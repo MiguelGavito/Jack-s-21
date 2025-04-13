@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 // HAY QUE CORREGIR EL ERROR DE QUE EL DEALER NO REDUCE EL VALOR DE SU AS EN CASO DE NECESITARLO
 
@@ -17,7 +18,7 @@ public class GameManager : MonoBehaviour
 
     public int record = 0;
 
-    public int puntajeObj = 0;
+    public int puntajeObj = 100;
 
     public static GameManager instance = null;
 
@@ -419,6 +420,7 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
+            SceneManager.LoadScene(0); // Cargar pantalla de inicio
         }
         
     }

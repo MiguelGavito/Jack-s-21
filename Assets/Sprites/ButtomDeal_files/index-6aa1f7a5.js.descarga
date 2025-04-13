@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retro Diffusion</title>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@RealAstropulse" />
+    <meta name="twitter:creator" content="@RealAstropulse" />
+    <meta property="og:url" content="https://retrodiffusion.ai" />
+    <meta property="og:title" content="Retro Diffusion" />
+    <meta property="og:description" content="Pixel art AI image generation tools built by artists for everyone. Create production ready artwork in seconds." />
+    <meta property="og:image" content="https://da8ztllw6by0f.cloudfront.net/preview.png" />
+    <script type="module" crossorigin src="/assets/index-48cd4773.js"></script>
+    <link rel="stylesheet" href="/assets/index-765c5a8c.css">
+  </head>
+  <script>
+    window.global = window;
+    window.process = {
+      env: { DEBUG: undefined },
+    }
+    var exports = {};
+  </script>
+  <body>
+    <div id="root"></div>
+    
+  </body>
+</html>
