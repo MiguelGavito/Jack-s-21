@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PauseManager : MonoBehaviour
 {
+    /*
     public MyUIManager uIManager;
     private bool isPaused = false;
 
@@ -11,4 +12,5 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = isPaused ? 0 : 1;
         uIManager.TogglePauseMenu(isPaused);
     }
+    */
 }

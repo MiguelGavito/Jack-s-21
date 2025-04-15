@@ -168,7 +168,18 @@ public class DeckManager : MonoBehaviour
 //Revisar luego
             GenerateDeck();
             ShuffleDeck();
-            DrawCard(playerTransform);
+
+            //Codigo copiado de arriba pero no quiero llamar a drawcard
+            GameObject drawnCardObj = deck.Pop(); // Sacar carta del mazo
+            drawnCardObj.transform.SetParent(playerTransform); // Asignarla al jugador
+            drawnCardObj.transform.localPosition = new Vector3(playerTransform.childCount * 1.5f, 0, 0);
+
+            Card drawnCard = drawnCardObj.GetComponent<Card>(); // Obtener el script de la carta
+            if (drawnCard != null)
+            {
+                drawnCard.TurnDown(); // Asegurar que inicia boca abajo
+                return drawnCard; // Devolver la carta para que `GameManager` la pueda modificar
+            }
         }
         return null; // Si el mazo está vacío, devolver `null`
     }

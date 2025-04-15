@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.Jobs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,9 @@ public class MyUIManager : MonoBehaviour
     public Button hitButton;
     public Button standButton;
     public Button dealButton;
+
     public GameObject pauseMenu;
+    public bool isMenuActive = false;
 
     public TextMeshProUGUI playerHandValueText;
     public TextMeshProUGUI dealerHandValueText;
@@ -23,6 +26,8 @@ public class MyUIManager : MonoBehaviour
 
     public GameManager manager;
 
+
+
     #endregion
 
     #region UI Interaction Methods
@@ -32,13 +37,26 @@ public class MyUIManager : MonoBehaviour
         hitButton.interactable = isInteractable;
         standButton.interactable = isInteractable;
         dealButton.interactable = isInteractable;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePauseMenu();
+        }
     }
 
-    public void TogglePauseMenu(bool show)
+    public void TogglePauseMenu()
     {
-        if (pauseMenu != null)
+        isMenuActive = !isMenuActive;
+
+        pauseMenu.SetActive(isMenuActive);
+
+        if (isMenuActive)
         {
-            pauseMenu.SetActive(show);
+            Time.timeScale = 0f; //Pause the game
+        }
+        else
+        {
+            Time.timeScale = 1f;
         }
     }
     #endregion
@@ -72,6 +90,12 @@ public class MyUIManager : MonoBehaviour
         HandsText.SetText(manager.lives.ToString());
 
         ObjScoreUIText.SetText(manager.puntajeObj.ToString());
+
+        // Escuchar tecla Escape
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePauseMenu();
+        }
     }
 
     #endregion

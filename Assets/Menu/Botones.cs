@@ -16,4 +16,14 @@ public class Botones : MonoBehaviour
             Application.Quit();
         #endif
     }
+
+    public void Shop()
+    {
+        SceneManager.LoadScene (2);
+    }
+
+    public void Menu()
+    {
+        SceneManager.LoadScene (0);
+    }
 }
