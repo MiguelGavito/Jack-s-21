@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Item", menuName = "Scriptable Objects/Item")]
-public abstract class Item : MonoBehaviour
+public abstract class Item : ScriptableObject
 {
     public string itemName; // nombre del objeto
     public string itemDescription; // descripcion del objeto

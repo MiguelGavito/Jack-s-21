@@ -84,6 +84,7 @@ public class EventManager : MonoBehaviour
         OnPlayerTurn?.Invoke();
         
         gameManager.UpdateScores();
+        uiManager.UpdateUI();
         uiManager.SetButtonsInteractable(true);
     }
 

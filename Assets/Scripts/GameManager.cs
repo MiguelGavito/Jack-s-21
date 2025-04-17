@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
     public MyUIManager uiManager;
     public EventManager eventManager;
 
+
+
+
     #endregion
 
     #region Inicialización
@@ -53,6 +56,8 @@ public class GameManager : MonoBehaviour
 
         Invoke("DelayedUpdateScores", 0.5f);
         EventManager.Instance.OnPlayerTurn += HandlePlayerTurn;
+
+        record = SaveManager.LoadHighScore();
     }
 
     private void OnEnable()
@@ -374,13 +379,13 @@ public class GameManager : MonoBehaviour
     void EndRound()
     {
         UpdateScores();
+
         int playerScore = GetPlayerHandValue(player1Transform);
         int dealerScore = GetPlayerHandValue(player2Transform);
 
         bool playerBust = IsBusted(player1Transform);
         bool dealerBust = IsBusted(player2Transform);
 
-        UpdateScores();
 
         if (playerBust && dealerBust)
         {
@@ -399,7 +404,7 @@ public class GameManager : MonoBehaviour
         else if (playerScore > dealerScore)
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
-            puntaje += playerScore - dealerScore + 20;
+            puntaje += (playerScore - dealerScore)*5 + 20;
         }
         else if (playerScore < dealerScore)
         {
@@ -409,7 +414,7 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.Log("Es un empate.");
-            puntaje += 5;
+            puntaje += 15;
         }
 
         if (lives > 0)
@@ -422,7 +427,15 @@ public class GameManager : MonoBehaviour
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
             SceneManager.LoadScene(0); // Cargar pantalla de inicio
         }
-        
+
+        // Codigo para actualizar record
+        if (puntaje > record)
+        {
+            record = puntaje;
+            SaveManager.SaveHighScore(record); // Guardamos el nuevo puntaje más alto.
+        }
+
+        uiManager.UpdateUI();
     }
 
     private IEnumerator DelayedStartRound()

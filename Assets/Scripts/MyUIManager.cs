@@ -91,10 +91,30 @@ public class MyUIManager : MonoBehaviour
 
         ObjScoreUIText.SetText(manager.puntajeObj.ToString());
 
+        RecordText.SetText(manager.record.ToString());
+
         // Escuchar tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             TogglePauseMenu();
+        }
+    }
+
+    public void UpdateUI()
+    {
+        // Actualiza el puntaje del jugador
+        ScoreUIText.SetText(manager.puntaje.ToString());
+
+        // Actualiza las vidas del jugador
+        HandsText.SetText(manager.lives.ToString());
+
+        // Actualiza el puntaje objetivo de la ronda
+        ObjScoreUIText.SetText(manager.puntajeObj.ToString());
+
+        // Actualiza el record (puntaje más alto)
+        if (RecordText != null)
+        {
+            RecordText.SetText(manager.record.ToString());
         }
     }
 
