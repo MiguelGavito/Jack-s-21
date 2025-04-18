@@ -304,7 +304,7 @@ public class GameManager : MonoBehaviour
 
     public bool IsBusted(Transform playerHand)
     {
-        return GetPlayerHandValue(playerHand) > 21;
+        return GetPlayerHandValue(playerHand) > 21; // cambiar todos los 21 por una variables llamada maximo o limite
     }
 
     public bool CheckAndAdjustIfBusted(Transform hand)
