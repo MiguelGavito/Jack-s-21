@@ -9,6 +9,12 @@ public class Botones : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
+    public void InicioNuevoJuego()
+    {
+        InventoryManager.instance.ResetInventory();
+        SceneManager.LoadScene(1);
+    }
+
     public void Salir()
     {
         #if UNITY_EDITOR
@@ -25,6 +31,9 @@ public class Botones : MonoBehaviour
 
     public void Menu()
     {
-        SceneManager.LoadScene (0);
+        //esto seria el boton de ir al menu y perder progreso
+        InventoryManager.instance.ResetInventory(); // reiniciamos el inventario
+
+        SceneManager.LoadScene(0); // Volver al menú
     }
 }

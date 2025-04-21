@@ -23,8 +23,11 @@ public class MyUIManager : MonoBehaviour
 
     public TextMeshProUGUI RecordText;
     public TextMeshProUGUI HandsText;
+    public TextMeshProUGUI RoundText;
+    public TextMeshProUGUI LimitCart;
 
     public GameManager manager;
+    public InventoryManager inventoryManager;
 
 
 
@@ -93,6 +96,10 @@ public class MyUIManager : MonoBehaviour
 
         RecordText.SetText(manager.record.ToString());
 
+        RoundText.SetText(inventoryManager.round.ToString());
+
+        LimitCart.SetText(manager.limiteCart.ToString());
+
         // Escuchar tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -110,6 +117,10 @@ public class MyUIManager : MonoBehaviour
 
         // Actualiza el puntaje objetivo de la ronda
         ObjScoreUIText.SetText(manager.puntajeObj.ToString());
+
+        RoundText.SetText(inventoryManager.round.ToString());
+
+        LimitCart.SetText(manager.limiteCart.ToString());
 
         // Actualiza el record (puntaje más alto)
         if (RecordText != null)

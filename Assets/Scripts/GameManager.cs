@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     #region Variables Generales
 
-    public int playerGems = 100;
+    public int playerGems;
     public int playerBet = 0;
 
     public int lives = 5;
@@ -20,7 +20,9 @@ public class GameManager : MonoBehaviour
 
     public int puntajeObj = 100;
 
-    public static GameManager instance = null;
+    public int limiteCart = 21;
+
+    public static GameManager instance;
 
     public DeckManager deckManager;
     // public Card cardManager;
@@ -38,46 +40,78 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Inicialización
-
-    void Awake()
+    private void Start()
     {
-        if (instance == null)
+        InventoryManager data = InventoryManager.instance;
+
+        int playergems = data.playerGems;
+        puntajeObj = data.PuntajeObjetivo;
+
+        //Reinciiar valores de la ronda
+        puntaje = 0;
+        playerBet = 0;
+
+        record = SaveManager.LoadHighScore();
+
+        if (EventManager.Instance != null)
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
+            // Primero desuscribirse para evitar múltiples suscripciones
+            EventManager.Instance.OnPlayerTurn -= PlayerTurn;
+            EventManager.Instance.OnDealerTurn -= DealerTurn;
+            EventManager.Instance.OnEndRound -= EndRound;
+
+            // Luego volver a suscribirse
+            EventManager.Instance.OnPlayerTurn += PlayerTurn;
+            EventManager.Instance.OnDealerTurn += DealerTurn;
+            EventManager.Instance.OnEndRound += EndRound;
         }
         else
         {
-            Destroy(gameObject);
+            Debug.LogError("GameManager: EventManager.Instance es null en Start()");
         }
-
-        deckManager = Object.FindFirstObjectByType<DeckManager>();
-        // cardManager = Object.FindFirstObjectByType<Card>();
-
-        Invoke("DelayedUpdateScores", 0.5f);
-        EventManager.Instance.OnPlayerTurn += HandlePlayerTurn;
-
-        record = SaveManager.LoadHighScore();
     }
 
-    private void OnEnable()
+    private void OnDestroy()
     {
-        EventManager.Instance.OnPlayerTurn += PlayerTurn;
-        EventManager.Instance.OnDealerTurn += DealerTurn;
-        EventManager.Instance.OnEndRound += EndRound;
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.OnPlayerTurn -= PlayerTurn;
+            EventManager.Instance.OnDealerTurn -= DealerTurn;
+            EventManager.Instance.OnEndRound -= EndRound;
+        }
     }
-
-    private void OnDisable()
-    {
-        if (EventManager.Instance == null) return;
-        EventManager.Instance.OnPlayerTurn -= PlayerTurn;
-        EventManager.Instance.OnDealerTurn -= DealerTurn;
-        EventManager.Instance.OnEndRound -= EndRound;
-    }
-
     #endregion
 
     #region Rondas
+
+    public void ResetGame()
+    {
+        Debug.Log("Reseteando partida...");
+
+        // Limpia referencias de cartas, manos, estados, variables, etc.
+        foreach (Transform card in player1Transform)
+        {
+            Destroy(card.gameObject);
+        }
+
+        foreach (Transform card in player2Transform)
+        {
+            Destroy(card.gameObject);
+        }
+
+
+        puntaje = 0;
+        lives = 5;
+        // cualquier otra variable de control o UI
+
+        // También podrías resetear flags o pasivos si tienes
+    }
+
+    public void NuevaPartida()
+    {
+        InventoryManager.instance.ResetInventory(); // Borra gemas, ronda, ítems, etc.
+        SceneManager.LoadScene("GameScene"); // Cambia por el nombre de tu escena del juego
+    }
 
     public void LimpiarManos()
     {
@@ -239,7 +273,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void EndPlayerTurnIfBusted(Transform player)
+    public void EndPlayerTurnIfBusted(Transform player) //checar luego para aniadir pausas
     {
         // Chequea si el jugador se ha pasado de 21 y termina el turno
         if (IsBusted(player))
@@ -293,7 +327,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Ajustar ases de 11 a 1 si el total se pasa de 21
-        while (totalValue > 21 && aceCount > 0)
+        while (totalValue > limiteCart && aceCount > 0)
         {
             totalValue -= 10; // convierte un As de 11 a 1
             aceCount--;
@@ -304,20 +338,20 @@ public class GameManager : MonoBehaviour
 
     public bool IsBusted(Transform playerHand)
     {
-        return GetPlayerHandValue(playerHand) > 21; // cambiar todos los 21 por una variables llamada maximo o limite
+        return GetPlayerHandValue(playerHand) > limiteCart; // cambiar todos los 21 por una variables llamada maximo o limite
     }
 
     public bool CheckAndAdjustIfBusted(Transform hand)
     {
         int total = deckManager.CalculateRawHandValue(hand);
 
-        while (total > 21 && deckManager.CountAces(hand) > 0)
+        while (total > limiteCart && deckManager.CountAces(hand) > 0)
         {
             deckManager.AdjustAceValue(hand);
             total = deckManager.CalculateRawHandValue(hand);
         }
 
-        return total > 21;
+        return total > limiteCart;
     }
 
     #endregion
@@ -342,6 +376,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DealerPlays()
     {
+
+        // aqui llamo al script del dealer
         FlipDealerCards();
 
         yield return new WaitForSeconds(1f);
@@ -355,12 +391,12 @@ public class GameManager : MonoBehaviour
 
             UpdateScores();
 
-            bool busted = CheckAndAdjustIfBusted(player2Transform);
+            bool busted = IsBusted(player2Transform);// lo cambie, antes habia uno de check and ajust pero era raro
             UpdateScores();
 
             if (busted)
             {
-                Debug.Log("El dealer se pasó de 21(incluso con ajustes de ases)");
+                Debug.Log($"El dealer se pasó de {limiteCart}(incluso con ajustes de ases)");
                 EventManager.Instance.EndDealerTurn();
                 yield break;
             }
@@ -369,6 +405,8 @@ public class GameManager : MonoBehaviour
         
         EventManager.Instance.EndDealerTurn();
     }
+
+
 
     public void Stand()
     {
@@ -389,16 +427,16 @@ public class GameManager : MonoBehaviour
 
         if (playerBust && dealerBust)
         {
-            Debug.Log("Ambos se pasaron de 21. Nadie gana.");
+            Debug.Log($"Ambos se pasaron de {limiteCart}. Nadie gana.");
         }
         else if (playerBust)
         {
-            Debug.Log("El jugador se pasó de 21 y ha perdido.");
+            Debug.Log($"El jugador se pasó de {limiteCart} y ha perdido.");
             lives--;
         }
         else if (dealerBust)
         {
-            Debug.Log("El dealer se pasó de 21, el jugador gana.");
+            Debug.Log($"El dealer se pasó de {limiteCart}, el jugador gana.");
             puntaje += 20;
         }
         else if (playerScore > dealerScore)
@@ -419,12 +457,19 @@ public class GameManager : MonoBehaviour
 
         if (lives > 0)
         {
+            
+
             Debug.Log("Preparando nueva ronda...");
             StartCoroutine(DelayedStartRound());
         }
         else
         {
+            
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
+
+            // Resetear valores en el InventoryManager para una nueva partida
+            InventoryManager.instance.ResetInventory();
+
             SceneManager.LoadScene(0); // Cargar pantalla de inicio
         }
 
@@ -433,6 +478,13 @@ public class GameManager : MonoBehaviour
         {
             record = puntaje;
             SaveManager.SaveHighScore(record); // Guardamos el nuevo puntaje más alto.
+        }
+        if (puntaje > puntajeObj)
+        {
+            // Guardar progreso de ronda y gemas
+            InventoryManager.instance.AgregarGemas(playerGems);
+            InventoryManager.instance.AvanzarRound();
+            SceneManager.LoadScene(2); // cargar tienda
         }
 
         uiManager.UpdateUI();

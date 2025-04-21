@@ -332,4 +332,29 @@ public class DeckManager : MonoBehaviour
         return value;
     }
     #endregion
+
+    #region Test Manager Manos
+    public void CrearManoDePrueba(Transform jugadorHand)
+    {
+        // Primero limpiamos la mano por si tiene cartas
+        ClearHand(jugadorHand);
+
+        // Crear As (valor 11)
+        CrearCartaManual(jugadorHand, "Corazon", 11, "A", cardSprites[0]); // Ajusta el índice según el sprite del As
+
+        // Crear carta 10
+        CrearCartaManual(jugadorHand, "Picas", 10, "10", cardSprites[9]); // Ajusta también este índice según sprite 10
+    }
+
+    private void CrearCartaManual(Transform destino, string palo, int valor, string rank, Sprite sprite)
+    {
+        GameObject cartaGO = Instantiate(cardPrefab, destino);
+        Card carta = cartaGO.GetComponent<Card>();
+
+        // Configurar la carta
+        carta.SetCard(palo, valor, $"{palo}{rank}", sprite, rank);
+        cartaGO.transform.localPosition = new Vector3(destino.childCount * 1.5f, 0, 0);
+    }
+
+    #endregion
 }

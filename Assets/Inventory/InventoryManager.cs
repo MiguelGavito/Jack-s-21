@@ -1,10 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
+
+
     private List<Item> playerItems = new List<Item>();  // Aquí guardamos los objetos del jugador
+
+    public int playerGems = 0;
+    public int round = 1;
+
+    public int PuntajeObjetivo => CalcularPuntajeObjetivo(round);
 
     private void Awake()
     {
@@ -17,6 +25,13 @@ public class InventoryManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void ResetInventory()
+    {
+        playerItems = new List<Item>();  // Aquí guardamos los objetos del jugador
+        playerGems = 0;
+        round = 1;
     }
 
     // Añadir objeto al inventario
@@ -34,5 +49,25 @@ public class InventoryManager : MonoBehaviour
     public void RemoveItem(Item item)
     {
         playerItems.Remove(item);
+    }
+
+    private int CalcularPuntajeObjetivo(int r)
+    {
+        int suma = 0;
+        for (int i = 1; i <= r; i++)
+        {
+            suma += i * 100;
+        }
+        return suma;
+    }
+
+    public void AvanzarRound()
+    {
+        round++;
+    }
+
+    public void AgregarGemas(int cantidad)
+    {
+        playerGems += cantidad;
     }
 }

@@ -1,0 +1,52 @@
+{
+    "greetings": [
+        "Welcome to the table.",
+        "Another round? Let's see if luck is on your side.",
+        "Back again, huh?"
+    ],
+    "playerBlackjack": [
+        "Blackjack! You're on fire!",
+        "Nice one, that's a clean 21.",
+        "Whoa, impressive start!"
+    ],
+    "dealerBlackjack": [
+        "Dealer hits Blackjack. Better luck next time.",
+        "A clean 21 for me. Try again!",
+        "Oof, that's a win for the house."
+    ],
+    "playerBust": [
+        "Busted! Careful there.",
+        "Over 21, huh? That's rough.",
+        "Too greedy, maybe?"
+    ],
+    "dealerBust": [
+        "Dealer busts! You got lucky.",
+        "House goes over. That one's yours.",
+        "I slipped. Good win!"
+    ],
+    "playerWin": [
+        "Nice win.",
+        "You're doing well.",
+        "You're beating the odds!"
+    ],
+    "dealerWin": [
+        "The house always wins...",
+        "Tough break.",
+        "That's another for me."
+    ],
+    "draw": [
+        "A tie. Not bad, not great.",
+        "Even match. Let’s go again.",
+        "Push. Nobody wins."
+    ],
+    "lowScore": [
+        "You're sitting low, huh?",
+        "Not feeling brave today?",
+        "Play it safe, I see."
+    ],
+    "closeCall": [
+        "Phew, cutting it close!",
+        "That was risky.",
+        "One more point and you'd be out!"
+    ]
+}

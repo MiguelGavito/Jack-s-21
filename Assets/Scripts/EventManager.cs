@@ -42,26 +42,38 @@ public class EventManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
 
         if (deckManager == null)
         {
             deckManager = FindFirstObjectByType<DeckManager>();
         }
+        if (gameManager == null)
+            gameManager = FindFirstObjectByType<GameManager>();
+
+        if (uiManager == null)
+            uiManager = FindFirstObjectByType<MyUIManager>();
     }
 
     private IEnumerator Start()
     {
-        
 
-        Debug.Log("Empieza el Start de EventManager y espera a que cargue el deck");
-        yield return null; //esperar un frame para que el Start() de deckManager se ejecute
-        yield return new WaitUntil(() =>
+
+        if (deckManager == null)
         {
-            Debug.Log("Esperando que deckManager esté listo... ¿deckManager null? " + (deckManager == null) + " ¿isInitialized? " + (deckManager?.isInitialized));
-            return deckManager != null && deckManager.IsInitialized();
-        });
-        Debug.Log("DeckManager esta listo, comenzando ronda");
+            deckManager = FindFirstObjectByType<DeckManager>();
+            if (deckManager == null)
+            {
+                Debug.LogError("DeckManager no encontrado.");
+                yield break;
+            }
+        }
+
+        Debug.Log("Esperando que deckManager esté listo...");
+        yield return new WaitUntil(() => deckManager.IsInitialized());
+
+        Debug.Log("DeckManager listo, iniciando ronda.");
         StartRound();
     }
     #endregion
@@ -91,6 +103,12 @@ public class EventManager : MonoBehaviour
     public void EndPlayerTurn()
     {
         Debug.Log("Termina el turno del juegador y se voltean las cartas boca abajo");
+
+        if (gameManager == null)
+        {
+            Debug.LogError("gameManager está NULL antes de iniciar Coroutine");
+        }
+
         StartCoroutine(TransitionToDealerTurn());
         uiManager.SetButtonsInteractable(false);
     }
@@ -98,8 +116,16 @@ public class EventManager : MonoBehaviour
     private IEnumerator TransitionToDealerTurn()
     {
         yield return new WaitForSeconds(delayBetweenTurns);
+
+        if (gameManager == null)
+        {
+            Debug.LogError("gameManager está NULL en TransitionToDealerTurn");
+            yield break;
+        }
+
         gameManager.FlipDealerCards(); // girar las cartas del dealer
         gameManager.UpdateScores(); // actualizamos los scores
+
         currentTurn = TurnState.DealerTurn;
         OnDealerTurn?.Invoke();
     }
@@ -107,7 +133,7 @@ public class EventManager : MonoBehaviour
     public void EndDealerTurn()
     {
         StartCoroutine(TransitionToEndRound());
-        GameManager.instance.FlipDealerCards();
+        gameManager.FlipDealerCards();
     }
 
     private IEnumerator TransitionToEndRound()
@@ -131,7 +157,7 @@ public class EventManager : MonoBehaviour
     private IEnumerator StartNextRoundSafely()
     {
         // Verifica si no estamos ya en una ronda activa
-        if (currentTurn == TurnState.EndRound || currentTurn == TurnState.PlayerTurn || currentTurn == TurnState.DealerTurn)
+        if (currentTurn == TurnState.PlayerTurn || currentTurn == TurnState.DealerTurn || currentTurn == TurnState.EndRound)
         {
             yield break;  // Si ya hay una ronda activa, no hacemos nada
         }
