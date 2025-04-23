@@ -1,0 +1,29 @@
+{
+  "inicio_juego": [
+    "Ah… otro desafortunado alma que cree poder vencerme. Qué adorable.",
+    "Bienvenido a mi dominio. Aquí las esperanzas se rompen… con estilo.",
+    "Toma asiento… y deja tus ilusiones sobre la mesa. Yo me encargaré del resto."
+  ],
+  "durante_juego": [
+    "¿Otra carta? Qué divertido… estás cavando tu propia tumba, una carta a la vez.",
+    "Me encanta ver cómo la confianza se convierte en desesperación. Sigue, por favor.",
+    "¿Crees tener suerte? Yo me alimento de los que creen en la suerte."
+  ],
+  "jugador_gana": [
+    "Interesante… incluso la oscuridad tiene momentos de error. No te emociones.",
+    "Saborea tu victoria… será breve. Muy, muy breve.",
+    "Hiciste trampa, ¿verdad? No importa. La casa siempre cobra lo que es suyo… con intereses."
+  ],
+  "jugador_pierde": [
+    "Otra derrota para ti, otro triunfo para mí. El equilibrio del universo se mantiene.",
+    "Tan cerca… pero tan lejos. ¿Te duele? Me alegra.",
+    "¿Escuchas eso? Es el sonido de tus fichas suplicando piedad. Lástima que no doy segundas oportunidades."
+  ],
+  "comentarios_generales": [
+    "Este juego no es para valientes… es para los insensatos.",
+    "Yo no reparto cartas. Reparto destinos… y el tuyo no pinta bien.",
+    "Tus fichas, tu orgullo, tu alma… todo acaba en esta mesa. Qué emocionante, ¿no?"
+  ]
+}
+
+

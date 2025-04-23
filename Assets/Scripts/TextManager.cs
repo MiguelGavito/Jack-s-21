@@ -1,7 +1,12 @@
 using UnityEngine;
+using TMPro;
+
 
 public class TextManager : MonoBehaviour
 {
+    public TextMeshProUGUI textBox;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
