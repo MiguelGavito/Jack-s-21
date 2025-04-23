@@ -26,6 +26,8 @@ public class MenuManager : MonoBehaviour
         {
             AudioManager.Instance.PlayMusic(musicClip);
         }
+
+        Debug.Log(Application.persistentDataPath);
     }
 
     // Update is called once per frame
