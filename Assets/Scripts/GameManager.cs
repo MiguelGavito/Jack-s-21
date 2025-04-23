@@ -3,7 +3,6 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-// HAY QUE CORREGIR EL ERROR DE QUE EL DEALER NO REDUCE EL VALOR DE SU AS EN CASO DE NECESITARLO
 
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +16,8 @@ public class GameManager : MonoBehaviour
     public int puntaje = 0;
 
     public int record = 0;
+
+    public int round;
 
     public int puntajeObj = 100;
 
@@ -34,6 +35,8 @@ public class GameManager : MonoBehaviour
     public MyUIManager uiManager;
     public EventManager eventManager;
 
+    public DealerCommentManager commentManager;
+    public DealerDialogueManager dialogueManager;
 
 
 
@@ -46,12 +49,16 @@ public class GameManager : MonoBehaviour
 
         int playergems = data.playerGems;
         puntajeObj = data.PuntajeObjetivo;
+        round = data.round;
 
         //Reinciiar valores de la ronda
         puntaje = 0;
         playerBet = 0;
 
         record = SaveManager.LoadHighScore();
+
+        string greeting = commentManager.GetRandomComment("greetings");
+        dialogueManager.Say(greeting);
 
         if (EventManager.Instance != null)
         {
@@ -428,30 +435,37 @@ public class GameManager : MonoBehaviour
         if (playerBust && dealerBust)
         {
             Debug.Log($"Ambos se pasaron de {limiteCart}. Nadie gana.");
+            dialogueManager.Say(commentManager.GetRandomComment("draw"));
         }
         else if (playerBust)
         {
             Debug.Log($"El jugador se pasó de {limiteCart} y ha perdido.");
+            dialogueManager.Say(commentManager.GetRandomComment("playerBust"));
             lives--;
         }
         else if (dealerBust)
         {
             Debug.Log($"El dealer se pasó de {limiteCart}, el jugador gana.");
+            dialogueManager.Say(commentManager.GetRandomComment("dealerBust"));
             puntaje += 20;
+            InventoryManager.instance.AgregarGemas(playerBet);
         }
         else if (playerScore > dealerScore)
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
+            dialogueManager.Say(commentManager.GetRandomComment("playerWin"));
             puntaje += (playerScore - dealerScore)*5 + 20;
         }
         else if (playerScore < dealerScore)
         {
             Debug.Log($"El dealer gana con {dealerScore} puntos contra {playerScore} del jugador.");
+            dialogueManager.Say(commentManager.GetRandomComment("dealerWin"));
             lives--;
         }
         else
         {
             Debug.Log("Es un empate.");
+            dialogueManager.Say(commentManager.GetRandomComment("draw"));
             puntaje += 15;
         }
 
@@ -466,7 +480,7 @@ public class GameManager : MonoBehaviour
         {
             
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
-
+            dialogueManager.Say(commentManager.GetRandomComment("dealerWin")); // comentario final opcional
             // Resetear valores en el InventoryManager para una nueva partida
             InventoryManager.instance.ResetInventory();
 
@@ -482,7 +496,7 @@ public class GameManager : MonoBehaviour
         if (puntaje > puntajeObj)
         {
             // Guardar progreso de ronda y gemas
-            InventoryManager.instance.AgregarGemas(playerGems);
+            
             InventoryManager.instance.AvanzarRound();
             SceneManager.LoadScene(2); // cargar tienda
         }

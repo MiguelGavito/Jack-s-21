@@ -25,6 +25,7 @@ public class MyUIManager : MonoBehaviour
     public TextMeshProUGUI HandsText;
     public TextMeshProUGUI RoundText;
     public TextMeshProUGUI LimitCart;
+    public TextMeshProUGUI GemsText;
 
     public GameManager manager;
     public InventoryManager inventoryManager;
@@ -96,9 +97,11 @@ public class MyUIManager : MonoBehaviour
 
         RecordText.SetText(manager.record.ToString());
 
-        RoundText.SetText(inventoryManager.round.ToString());
+        RoundText.SetText(manager.round.ToString());
 
         LimitCart.SetText(manager.limiteCart.ToString());
+
+        GemsText.SetText(manager.playerGems.ToString());
 
         // Escuchar tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -121,6 +124,9 @@ public class MyUIManager : MonoBehaviour
         RoundText.SetText(inventoryManager.round.ToString());
 
         LimitCart.SetText(manager.limiteCart.ToString());
+
+        GemsText.SetText(inventoryManager.playerGems.ToString());
+
 
         // Actualiza el record (puntaje más alto)
         if (RecordText != null)

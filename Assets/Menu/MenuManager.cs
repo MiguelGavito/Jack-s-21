@@ -6,6 +6,8 @@ public class MenuManager : MonoBehaviour
 
     public TextMeshProUGUI recordText;
 
+    public AudioClip musicClip;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,6 +20,11 @@ public class MenuManager : MonoBehaviour
         else
         {
             Debug.LogError("No se ha asignado el TextMeshProUGUI para mostrar el record.");
+        }
+        
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusic(musicClip);
         }
     }
 

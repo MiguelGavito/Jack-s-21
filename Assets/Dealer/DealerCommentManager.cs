@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class DealerCommentManager : MonoBehaviour 
+public class DealerCommentManager : MonoBehaviour
 {
     public DealerComments comments;
 
     void Awake()
     {
-        TextAsset jsonText = Resources.Load<TextAsset>("dealer_comments");
+        TextAsset jsonText = Resources.Load<TextAsset>("Dialogos/dealer_comments");
         if (jsonText != null)
         {
             comments = JsonUtility.FromJson<DealerComments>(jsonText.text);
