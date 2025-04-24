@@ -7,14 +7,15 @@ public class PassiveItemManager : MonoBehaviour
 
     public List<PassiveItem> passiveItems = new List<PassiveItem>();
 
+    public List<Item> itemList = new List<Item>();
+
     public static PassiveItemManager Instance;
 
-    private void Awake()
+    InventoryManager data = InventoryManager.instance;
+
+    private void Start()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        itemList = data.GetPlayerItems();
     }
     public void AddPassiveItem(PassiveItem item)
     {

@@ -8,7 +8,12 @@ public class GameManager : MonoBehaviour
 {
     #region Variables Generales
 
-    public int playerGems;
+    public int playerGems
+    {
+        get => InventoryManager.instance.playerGems;
+        set => InventoryManager.instance.playerGems = value;
+    }
+
     public int playerBet = 0;
 
     public int lives = 5;
@@ -448,13 +453,19 @@ public class GameManager : MonoBehaviour
             Debug.Log($"El dealer se pasó de {limiteCart}, el jugador gana.");
             dialogueManager.Say(commentManager.GetRandomComment("dealerBust"));
             puntaje += 20;
-            InventoryManager.instance.AgregarGemas(playerBet);
+            if (playerScore == 21)
+            {
+                puntaje += 25;
+                dialogueManager.Say(commentManager.GetRandomComment("playerBlackjack"));
+            }
+            playerGems += playerBet * 2;
         }
         else if (playerScore > dealerScore)
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
             dialogueManager.Say(commentManager.GetRandomComment("playerWin"));
             puntaje += (playerScore - dealerScore)*5 + 20;
+            playerGems += playerBet * 3;
         }
         else if (playerScore < dealerScore)
         {

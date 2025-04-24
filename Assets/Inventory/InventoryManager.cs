@@ -7,7 +7,7 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager instance;
 
 
-    private List<Item> playerItems = new List<Item>();  // Aquí guardamos los objetos del jugador
+    public List<Item> playerItems = new List<Item>();  // Aquí guardamos los objetos del jugador
 
     public int playerGems = 0;
     public int round = 1;

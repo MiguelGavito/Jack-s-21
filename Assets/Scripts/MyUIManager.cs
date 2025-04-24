@@ -26,6 +26,7 @@ public class MyUIManager : MonoBehaviour
     public TextMeshProUGUI RoundText;
     public TextMeshProUGUI LimitCart;
     public TextMeshProUGUI GemsText;
+    public TextMeshProUGUI BetText;
 
     public GameManager manager;
     public InventoryManager inventoryManager;
@@ -34,8 +35,15 @@ public class MyUIManager : MonoBehaviour
 
     #endregion
 
+    private void Start()
+    {
+        InventoryManager data = InventoryManager.instance;
+
+        inventoryManager = data;
+    }
+
     #region UI Interaction Methods
-    // Funciones que interactúan con los botones de la UI
+        // Funciones que interactúan con los botones de la UI
     public void SetButtonsInteractable(bool isInteractable)
     {
         hitButton.interactable = isInteractable;
@@ -103,6 +111,8 @@ public class MyUIManager : MonoBehaviour
 
         GemsText.SetText(manager.playerGems.ToString());
 
+        BetText.SetText(manager.playerBet.ToString());
+
         // Escuchar tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -127,6 +137,7 @@ public class MyUIManager : MonoBehaviour
 
         GemsText.SetText(inventoryManager.playerGems.ToString());
 
+        BetText.SetText(manager.playerBet.ToString());
 
         // Actualiza el record (puntaje más alto)
         if (RecordText != null)
