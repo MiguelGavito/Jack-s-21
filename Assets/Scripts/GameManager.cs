@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 
 public class GameManager : MonoBehaviour
@@ -28,6 +30,8 @@ public class GameManager : MonoBehaviour
 
     public int limiteCart = 21;
 
+    public int bonus;
+
     public static GameManager instance;
 
     public DeckManager deckManager;
@@ -43,7 +47,8 @@ public class GameManager : MonoBehaviour
     public DealerCommentManager commentManager;
     public DealerDialogueManager dialogueManager;
 
-
+    public Transform passiveItemParent;
+    public GameObject passiveItemPrefab;
 
     #endregion
 
@@ -55,6 +60,9 @@ public class GameManager : MonoBehaviour
         int playergems = data.playerGems;
         puntajeObj = data.PuntajeObjetivo;
         round = data.round;
+
+        LoadPassiveItems();
+        ActivatePassiveEffects();
 
         //Reinciiar valores de la ronda
         puntaje = 0;
@@ -83,6 +91,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+
     private void OnDestroy()
     {
         if (EventManager.Instance != null)
@@ -90,6 +100,57 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.OnPlayerTurn -= PlayerTurn;
             EventManager.Instance.OnDealerTurn -= DealerTurn;
             EventManager.Instance.OnEndRound -= EndRound;
+        }
+    }
+    #endregion
+
+    #region Objetos
+    private void LoadPassiveItems()
+    {
+        List<Item> passiveItems = InventoryManager.instance.GetPlayerItems();
+
+        foreach (Item item in passiveItems)
+        {
+            PassiveItem passive = item as PassiveItem;
+            if (passive != null)
+            {
+                // Crear un GameObject para representar el PassiveItem y añadirlo al contenedor en el UI
+                GameObject go = Instantiate(passiveItemPrefab, passiveItemParent);
+
+                // Obtener el componente que se encargará de mostrar los detalles del objeto pasivo
+                PassiveItemHolder holder = go.GetComponent<PassiveItemHolder>();
+                if (holder != null)
+                {
+                    holder.passiveItemData = passive;
+                    holder.ActivateItem() ;  // Activar su efecto si corresponde
+                }
+
+                // Aplicar el efecto pasivo en el GameManager
+                passive.UseItem(this);  // Aplicar efectos de este PassiveItem
+            }
+        }
+    }
+
+    private void ActivatePassiveEffects()
+    {
+        // Obtener los objetos pasivos del inventario
+        List<Item> passiveItems = InventoryManager.instance.GetPlayerItems();
+
+        foreach (Item item in passiveItems)
+        {
+            // Asegurarse de que el item sea un PassiveItem
+            PassiveItem passive = item as PassiveItem;
+            if (passive != null)
+            {
+                // Crear GameObject para mostrar el efecto visual o agregar la lógica aquí si es necesario
+                // En este caso, ya aplicamos el efecto en LoadPassiveItems, pero si necesitas aplicar efectos adicionales, hazlo aquí.
+                PassiveItemHolder holder = passive.GetComponent<PassiveItemHolder>();
+                if (holder != null)
+                {
+                    // Puedes aplicar un efecto adicional aquí si es necesario
+                    holder.ApplyPassive(GameManager.instance);  // Vuelve a aplicar el efecto (si es necesario hacer algo adicional)
+                }
+            }
         }
     }
     #endregion
@@ -455,7 +516,7 @@ public class GameManager : MonoBehaviour
             puntaje += 20;
             if (playerScore == 21)
             {
-                puntaje += 25;
+                puntaje += 25 + bonus;
                 dialogueManager.Say(commentManager.GetRandomComment("playerBlackjack"));
             }
             playerGems += playerBet * 2;
@@ -464,7 +525,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
             dialogueManager.Say(commentManager.GetRandomComment("playerWin"));
-            puntaje += (playerScore - dealerScore)*5 + 20;
+            puntaje += (playerScore - dealerScore)*5 + 20 + bonus;
             playerGems += playerBet * 3;
         }
         else if (playerScore < dealerScore)
@@ -477,7 +538,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Es un empate.");
             dialogueManager.Say(commentManager.GetRandomComment("draw"));
-            puntaje += 15;
+            puntaje += 15 + bonus;
         }
 
         if (lives > 0)

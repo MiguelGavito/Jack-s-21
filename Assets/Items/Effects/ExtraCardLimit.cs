@@ -7,7 +7,10 @@ public class ExtraCardLimit : ScriptableObject, IPassiveEffect
 
     public void Apply(GameManager gameManager)
     {
+        if (gameManager  != null) 
+        { 
         gameManager.limiteCart += extraLimit;
         Debug.Log($"[Passive] Liite de puntos de cartas aumentado en {extraLimit}.");
+        }
     }
 }

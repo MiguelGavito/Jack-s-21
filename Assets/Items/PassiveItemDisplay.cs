@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class PassiveItemDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    #region Variables
     [Header("UI Elements")]
     public GameObject tooltipPanel;
     public TextMeshProUGUI nameText;
@@ -13,10 +12,9 @@ public class PassiveItemDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
     public TextMeshProUGUI bonusText;
     public Image backgroundImage;
 
-    private PassiveItem itemData;
-    #endregion
+    private PassiveItemHolder itemData;
 
-    public void SetItem(PassiveItem newItem)
+    public void SetItem(PassiveItemHolder newItem)
     {
         itemData = newItem;
         UpdateTooltipInfo();
@@ -25,6 +23,11 @@ public class PassiveItemDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
     private void Start()
     {
         tooltipPanel.SetActive(false);
+        if (itemData == null)
+        {
+            itemData = GetComponent<PassiveItemHolder>();
+        }
+        UpdateTooltipInfo();
     }
 
     private void UpdateTooltipInfo()
@@ -37,14 +40,13 @@ public class PassiveItemDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
         backgroundImage.color = new Color(1f, 0.5f, 0f); // naranja
     }
 
-    public  void OnPointerEnter(PointerEventData eventData)
+    public void OnPointerEnter(PointerEventData eventData)
     {
         tooltipPanel.SetActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        tooltipPanel.SetActive(false );
+        tooltipPanel.SetActive(false);
     }
-
 }
