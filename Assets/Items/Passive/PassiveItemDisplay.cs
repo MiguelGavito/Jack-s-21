@@ -1,11 +1,20 @@
+using System.Runtime.InteropServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PassiveItemDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    #region Variables
+    [Header("Scriptable Object")]
+    public PassiveItem passiveItem;
+
+    [Header("Sprite")]
+    public TextMeshProUGUI icon;
+    public Sprite forma;
+    public Image spriteColor;
+
     [Header("UI Elements")]
     public GameObject tooltipPanel;
     public TextMeshProUGUI nameText;
@@ -14,18 +23,23 @@ public class PassiveItemDisplay : MonoBehaviour, IPointerEnterHandler, IPointerE
     public Image backgroundImage;
 
     private PassiveItem itemData;
-    #endregion
+
+    
+
 
     public void SetItem(PassiveItem newItem)
     {
         itemData = newItem;
         UpdateTooltipInfo();
+
     }
 
     private void Start()
     {
         tooltipPanel.SetActive(false);
     }
+
+
 
     private void UpdateTooltipInfo()
     {

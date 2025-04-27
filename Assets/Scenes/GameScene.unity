@@ -3710,7 +3710,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   passiveItems:
   - {fileID: 0}
-  itemList: []
 --- !u!1 &938517073
 GameObject:
   m_ObjectHideFlags: 0
@@ -4752,6 +4751,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54f76c53fb41fc4429c3a8e2cd266000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  passiveItemParent: {fileID: 908370264}
+  passiveItemPrefab: {fileID: 8080876209399704297}
   playerBet: 0
   lives: 5
   puntaje: 0
@@ -6499,6 +6500,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a23d9fb44d4fb7b4fad6f4e85f3177b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  passiveItemPrefab: {fileID: 0}
+  extraCardLimit: {fileID: 0}
+  passiveItemParent: {fileID: 0}
   playerItems: []
   playerGems: 10
   round: 1

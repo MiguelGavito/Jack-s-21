@@ -6,8 +6,14 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
 
+    public GameManager gameManager;
+    public GameObject passiveItemPrefab;
+    public ExtraCardLimit extraCardLimit;
 
-    public List<Item> playerItems = new List<Item>();  // Aquí guardamos los objetos del jugador
+    public Transform passiveItemParent;
+
+
+    public List<PassiveItem> playerItems = new List<PassiveItem>();  // Aquí guardamos los objetos del jugador
 
     public int playerGems = 0;
     public int round = 1;
@@ -27,26 +33,44 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public void AddPassiveItem(IPassiveEffect effect)
+    {
+        // Crear una nueva instancia del prefab
+        GameObject newPassiveItemObject = Instantiate(passiveItemPrefab);
+
+        // Obtener el script del PassiveItem
+        PassiveItem passiveItem = newPassiveItemObject.GetComponent<PassiveItem>();
+
+
+        // Ahora puedes asignar este PassiveItem al display
+        PassiveItemDisplay display = newPassiveItemObject.GetComponent<PassiveItemDisplay>();
+        display.SetItem(passiveItem);
+
+        // Si tienes un GameManager y quieres aplicar el efecto
+        passiveItem.UseItem(gameManager);
+    }
+
     public void ResetInventory()
     {
-        playerItems = new List<Item>();  // Aquí guardamos los objetos del jugador
+        playerItems = new List<PassiveItem>();  // Aquí guardamos los objetos del jugador
         playerGems = 0;
         round = 1;
     }
 
     // Añadir objeto al inventario
-    public void AddItem(Item item)
+    public void AddItem(PassiveItem item)
     {
         playerItems.Add(item);
+        item.ApplyEffect(GameManager.instance); // Aplica el efecto pasivo
     }
 
     // Obtener los objetos del jugador
-    public List<Item> GetPlayerItems()
+    public List<PassiveItem> GetPlayerItems()
     {
         return playerItems;
     }
 
-    public void RemoveItem(Item item)
+    public void RemoveItem(PassiveItem item)
     {
         playerItems.Remove(item);
     }

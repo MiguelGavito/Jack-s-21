@@ -1,24 +1,55 @@
-using NUnit.Framework;
 using UnityEngine;
-using System.Collections.Generic;
 
-public class PassiveItem : Item
+public enum PassiveEffectType
 {
-    public int bonusValue;  // Valor de la bonificación que este objeto otorga
-    public List<ScriptableObject> effectObjects;
+    IncreaseMaxCards,
+    BonusGems,
+    IncreaseMultScore
+    //agregar mas aqui en caso de necesitar
+}
 
-    // Este ítem podría tener efectos pasivos que se activan mientras está en el inventario
-    public override void UseItem(GameManager gameManager)
+[CreateAssetMenu(fileName = "Passive Item", menuName = "Scriptable Objects/PassiveItem")]
+public class PassiveItem : ScriptableObject
+{
+    public string itemName;
+    public string itemDescription;
+    public int price;
+    public bool isUsed = false;
+
+    public int bonusValue;
+
+    public PassiveEffectType effectType;
+
+    public void UseItem(GameManager gameManager)
     {
-        // Los objetos pasivos no suelen tener un "uso" directo, sino que tienen un efecto siempre activo
-        Debug.Log($"{itemName} activado. El valor de bonificación es {bonusValue}.");
-
-        foreach (var obj in effectObjects)
+        switch (effectType)
         {
-            if (obj is IPassiveEffect effect)
-            {
-                effect.Apply(gameManager);
-            }
+            case PassiveEffectType.IncreaseMaxCards:
+                gameManager.limiteCart += bonusValue;
+                break;
+
+            case PassiveEffectType.BonusGems:
+                gameManager.playerGems += bonusValue;
+                break;
+
+            case PassiveEffectType.IncreaseMultScore:
+                gameManager.puntaje *= bonusValue;
+                break;
+
+            // otros casos aquí...
+            default:
+                Debug.LogWarning("No se definió un efecto para este objeto pasivo.");
+                break;
         }
+    }
+    
+    public void ResetItem()
+    {
+        isUsed = false;
+    }
+
+    public void ApplyEffect(GameManager gameManager)
+    {
+        UseItem(gameManager);  // Esto llama a UseItem, que aplica el efecto
     }
 }

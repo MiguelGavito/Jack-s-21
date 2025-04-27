@@ -8,7 +8,7 @@ public class ShopManager : MonoBehaviour
 
     
 
-    public List<Item> PlayerItems;
+    public List<PassiveItem> PlayerItems;
 
     public int gems;
 
@@ -21,7 +21,7 @@ public class ShopManager : MonoBehaviour
     }
 
 
-    public void comprarItem1(Item item)
+    public void comprarItem1(PassiveItem item)
     {
         if( gems < 100)
         {

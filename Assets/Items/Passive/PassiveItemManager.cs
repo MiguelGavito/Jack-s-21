@@ -1,26 +1,51 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PassiveItemManager : MonoBehaviour
 {
+    public static PassiveItemManager Instance;
 
     public List<PassiveItem> passiveItems = new List<PassiveItem>();
 
-    public List<Item> itemList = new List<Item>();
+    private InventoryManager data;
 
-    public static PassiveItemManager Instance;
-
-    InventoryManager data = InventoryManager.instance;
+    private void Awake()
+    {
+        // Asegurar Singleton si lo quieres
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Si quieres que sobreviva entre escenas
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
-        itemList = data.GetPlayerItems();
+        data = InventoryManager.instance;
+        // itemList = data.GetPlayerItems();  // Si necesitas obtener la lista de items
     }
+
+    public void LoadPassiveItemFromInventory()
+    {
+        var data = InventoryManager.instance;
+        if (data != null)
+        {
+            passiveItems = data.GetPlayerItems();
+        }
+        else
+        {
+            Debug.LogWarning("InventoryManager no esta inicializado.");
+        }
+    }
+
     public void AddPassiveItem(PassiveItem item)
     {
         passiveItems.Add(item);
-        item.UseItem(GameManager.instance); // activa efecto pasivo
+        item.UseItem(GameManager.instance);
     }
 
     public int GetTotalBonus()

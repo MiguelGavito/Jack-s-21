@@ -15,18 +15,24 @@ public class MyUIManager : MonoBehaviour
     public GameObject pauseMenu;
     public bool isMenuActive = false;
 
+    [Header("Puntaciones")]
     public TextMeshProUGUI playerHandValueText;
     public TextMeshProUGUI dealerHandValueText;
 
     public TextMeshProUGUI ScoreUIText;
     public TextMeshProUGUI ObjScoreUIText;
 
+    [Header("UI References")]
     public TextMeshProUGUI RecordText;
     public TextMeshProUGUI HandsText;
     public TextMeshProUGUI RoundText;
     public TextMeshProUGUI LimitCart;
     public TextMeshProUGUI GemsText;
     public TextMeshProUGUI BetText;
+
+    [Header("Mensajero")]
+    public TextMeshProUGUI Informante;
+    public bool isInfoDisplay = false;
 
     public GameManager manager;
     public InventoryManager inventoryManager;
@@ -54,6 +60,8 @@ public class MyUIManager : MonoBehaviour
         {
             TogglePauseMenu();
         }
+
+
     }
 
     public void TogglePauseMenu()
@@ -144,6 +152,21 @@ public class MyUIManager : MonoBehaviour
         {
             RecordText.SetText(manager.record.ToString());
         }
+    }
+
+    public void MensajeGanarRonda(int gemas, int puntos)
+    {
+        Informante.SetText($"You win ");
+    }
+
+    public void MensajePerderRonda(int gemas, int puntos)
+    {
+        Informante.SetText("lose 1 live");
+    }
+
+    public void MensajePerderJuego()
+    {
+        Informante.SetText("Game Over");
     }
 
     #endregion

@@ -2,11 +2,16 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 
 public class GameManager : MonoBehaviour
 {
     #region Variables Generales
+
+    public Transform passiveItemParent;
+    public GameObject passiveItemPrefab;
 
     public int playerGems
     {
@@ -56,6 +61,8 @@ public class GameManager : MonoBehaviour
         puntajeObj = data.PuntajeObjetivo;
         round = data.round;
 
+        LoadPassiveItems();
+
         //Reinciiar valores de la ronda
         puntaje = 0;
         playerBet = 0;
@@ -80,6 +87,19 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogError("GameManager: EventManager.Instance es null en Start()");
+        }
+    }
+
+    private void LoadPassiveItems()
+    {
+        foreach (PassiveItem item in InventoryManager.instance.GetPlayerItems())
+        {
+            GameObject newItemObject = Instantiate(passiveItemPrefab, passiveItemParent);
+
+            PassiveItemDisplay display = newItemObject.GetComponent<PassiveItemDisplay>();
+            display.SetItem(item as PassiveItem); // Castear el item para usarlo en el display
+
+            newItemObject.transform.localScale = Vector3.one;
         }
     }
 
@@ -123,6 +143,12 @@ public class GameManager : MonoBehaviour
     {
         InventoryManager.instance.ResetInventory(); // Borra gemas, ronda, ítems, etc.
         SceneManager.LoadScene("GameScene"); // Cambia por el nombre de tu escena del juego
+    }
+
+    // Método para aplicar el efecto pasivo de un objeto
+    public void ApplyPassiveEffect(PassiveItem item)
+    {
+        item.UseItem(this);  // Llama directamente al UseItem para aplicar el efecto
     }
 
     public void LimpiarManos()
