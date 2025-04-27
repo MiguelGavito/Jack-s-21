@@ -9,7 +9,7 @@ public enum PassiveEffectType
 }
 
 [CreateAssetMenu(fileName = "Passive Item", menuName = "Scriptable Objects/PassiveItem")]
-public class PassiveItem : ScriptableObject
+public abstract class PassiveItem : ScriptableObject
 {
     public string itemName;
     public string itemDescription;
@@ -19,6 +19,8 @@ public class PassiveItem : ScriptableObject
     public int bonusValue;
 
     public PassiveEffectType effectType;
+
+    public abstract void Apply(GameManager gameManager);
 
     public void UseItem(GameManager gameManager)
     {

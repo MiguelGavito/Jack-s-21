@@ -165,21 +165,21 @@ public class GameManager : MonoBehaviour
     }
 
     //Esta funcion genera muchos problemas, creo que hasta convendria quitarla pero pierde sentido la modulacion si asi lo hago
-    public void StartNewRound()
+    public IEnumerator StartNewRound()
     {
         Debug.Log("startnweround ejecuta setupnewroundcoroutine");
         //StartCoroutine(SetupNewRoundCoroutine());
         PlayerDrawCard(player1Transform);
-        //yield return new WaitForSeconds(1f); // o incluso 0.01f puede servir
+        yield return new WaitForSeconds(0.5f); // o incluso 0.01f puede servir
 
         PlayerDrawCard(player1Transform);
-        //yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         PlayerDrawCardFaceDown(player2Transform);
-        //yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         PlayerDrawCard(player2Transform);
-        //yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
     }
 
     private IEnumerator SetupNewRoundCoroutine()

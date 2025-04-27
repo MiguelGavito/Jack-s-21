@@ -19,6 +19,9 @@ public class DeckManager : MonoBehaviour
 
     private Stack<GameObject> deck = new Stack<GameObject>();
     public bool isInitialized = false;
+
+    public AudioSource RepartoSound;
+    public AudioSource BarajarSound;
     #endregion
 
     #region Initialization
@@ -107,6 +110,11 @@ public class DeckManager : MonoBehaviour
                 deck.Push(newCard);
             }
         }
+        // Reproducir el sonido de barajar
+        if (BarajarSound != null)
+        {
+            BarajarSound.Play();
+        }
     }
 
     void ShuffleDeck()
@@ -119,6 +127,11 @@ public class DeckManager : MonoBehaviour
             int randomIndex = Random.Range(0, deckList.Count);
             deck.Push(deckList[randomIndex]);
             deckList.RemoveAt(randomIndex);
+        }
+        // Reproducir el sonido de barajar
+        if (BarajarSound != null)
+        {
+            BarajarSound.Play();
         }
     }
     #endregion
@@ -160,6 +173,13 @@ public class DeckManager : MonoBehaviour
             if (drawnCard != null)
             {
                 drawnCard.TurnDown(); // Asegurar que inicia boca abajo
+
+                // Reproducir el sonido de reparto
+                if (RepartoSound != null)
+                {
+                    RepartoSound.Play();
+                }
+
                 return drawnCard; // Devolver la carta para que `GameManager` la pueda modificar
             }
         }
@@ -178,6 +198,12 @@ public class DeckManager : MonoBehaviour
             if (drawnCard != null)
             {
                 drawnCard.TurnDown(); // Asegurar que inicia boca abajo
+
+                if (RepartoSound != null)
+                {
+                    RepartoSound.Play();
+                }
+
                 return drawnCard; // Devolver la carta para que `GameManager` la pueda modificar
             }
         }
