@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
 
     public DealerCommentManager commentManager;
     public DealerDialogueManager dialogueManager;
-
+    
 
 
     #endregion
@@ -462,6 +462,8 @@ public class GameManager : MonoBehaviour
         bool playerBust = IsBusted(player1Transform);
         bool dealerBust = IsBusted(player2Transform);
 
+        int gemasExt;
+        int puntajeExt;
 
         if (playerBust && dealerBust)
         {
@@ -472,38 +474,55 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log($"El jugador se pasó de {limiteCart} y ha perdido.");
             dialogueManager.Say(commentManager.GetRandomComment("playerBust"));
+            uiManager.MensajePerderRonda();
             lives--;
         }
         else if (dealerBust)
         {
             Debug.Log($"El dealer se pasó de {limiteCart}, el jugador gana.");
             dialogueManager.Say(commentManager.GetRandomComment("dealerBust"));
-            puntaje += 20;
+            puntajeExt = 20;
             if (playerScore == 21)
             {
-                puntaje += 25;
+                puntajeExt += 25;
                 dialogueManager.Say(commentManager.GetRandomComment("playerBlackjack"));
             }
-            playerGems += playerBet * 2;
+            gemasExt = playerBet * 2;
+
+            puntaje += puntajeExt;
+            playerGems += gemasExt;
+
+            uiManager.MensajeGanarRonda(gemasExt, puntajeExt);
         }
         else if (playerScore > dealerScore)
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
+            
             dialogueManager.Say(commentManager.GetRandomComment("playerWin"));
-            puntaje += (playerScore - dealerScore)*5 + 20;
-            playerGems += playerBet * 3;
+
+            puntajeExt = (playerScore - dealerScore) * 5 + 20;
+            puntaje += puntajeExt;
+
+            gemasExt = playerBet * 3;
+            playerGems += gemasExt;
+
+            uiManager.MensajeGanarRonda(gemasExt, puntajeExt);
         }
         else if (playerScore < dealerScore)
         {
             Debug.Log($"El dealer gana con {dealerScore} puntos contra {playerScore} del jugador.");
+            uiManager.MensajePerderRonda();
             dialogueManager.Say(commentManager.GetRandomComment("dealerWin"));
             lives--;
         }
         else
         {
-            Debug.Log("Es un empate.");
-            dialogueManager.Say(commentManager.GetRandomComment("draw"));
             puntaje += 15;
+            playerGems += playerBet;
+            Debug.Log("Es un empate.");
+            uiManager.MensajeEmpate(playerBet, 15);
+            dialogueManager.Say(commentManager.GetRandomComment("draw"));
+            
         }
 
         if (lives > 0)
@@ -515,9 +534,13 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            //mensaje de que perdiste
+            uiManager.MensajePerderJuego();
             
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
             dialogueManager.Say(commentManager.GetRandomComment("dealerWin")); // comentario final opcional
+            
+            
             // Resetear valores en el InventoryManager para una nueva partida
             InventoryManager.instance.ResetInventory();
 

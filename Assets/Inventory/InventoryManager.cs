@@ -8,14 +8,14 @@ public class InventoryManager : MonoBehaviour
 
     public GameManager gameManager;
     public GameObject passiveItemPrefab;
-    public ExtraCardLimit extraCardLimit;
+    public ScriptableObject extraCardLimit;
 
     public Transform passiveItemParent;
 
 
     public List<PassiveItem> playerItems = new List<PassiveItem>();  // Aquí guardamos los objetos del jugador
 
-    public int playerGems = 0;
+    public int playerGems = 10;
     public int round = 1;
 
     public int PuntajeObjetivo => CalcularPuntajeObjetivo(round);
@@ -53,7 +53,7 @@ public class InventoryManager : MonoBehaviour
     public void ResetInventory()
     {
         playerItems = new List<PassiveItem>();  // Aquí guardamos los objetos del jugador
-        playerGems = 0;
+        playerGems = 10;
         round = 1;
     }
 

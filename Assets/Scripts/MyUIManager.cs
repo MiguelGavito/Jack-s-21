@@ -8,10 +8,12 @@ public class MyUIManager : MonoBehaviour
 {
     #region Variables
     // Variables públicas para los botones y textos de la interfaz
+    [Header("Botones")]
     public Button hitButton;
     public Button standButton;
     public Button dealButton;
 
+    [Header("Cuadro Menu")]
     public GameObject pauseMenu;
     public bool isMenuActive = false;
 
@@ -34,8 +36,10 @@ public class MyUIManager : MonoBehaviour
     public TextMeshProUGUI Informante;
     public bool isInfoDisplay = false;
 
+    [Header("Referencias externas")]
     public GameManager manager;
     public InventoryManager inventoryManager;
+    public TextManager roundMessenger;
 
 
 
@@ -156,17 +160,26 @@ public class MyUIManager : MonoBehaviour
 
     public void MensajeGanarRonda(int gemas, int puntos)
     {
-        Informante.SetText($"You win ");
+        string mensaje = $"¡You Won the round! Obtuviste {puntos} puntos y {gemas} gemas.";
+        roundMessenger.Announce(mensaje);
     }
 
-    public void MensajePerderRonda(int gemas, int puntos)
+    public void MensajePerderRonda()
     {
-        Informante.SetText("lose 1 live");
+        string mensaje = $"Perdiste la ronda. Pierdes una vida. Pierdes tu apuesta.";
+        roundMessenger.Announce(mensaje);
     }
 
     public void MensajePerderJuego()
     {
-        Informante.SetText("Game Over");
+        string mensaje = "¡Game Over! Mejor suerte la próxima.";
+        roundMessenger.Announce(mensaje);
+    }
+
+    public void MensajeEmpate(int gemas, int puntos)
+    {
+        string mensaje = $"DRAW, you get {gemas} gems and {puntos} points.";
+        roundMessenger.Announce(mensaje);
     }
 
     #endregion
