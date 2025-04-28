@@ -17,7 +17,7 @@ public class SaveManager : MonoBehaviour
         // Guardamos el archivo json en la ruta especificada
         File.WriteAllText(saveFilePath, json);
     }
-
+    
     // Cargar el puntaje mas alto desde el archivo JSON
     public static int LoadHighScore()
     {
