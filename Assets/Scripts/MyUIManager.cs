@@ -58,7 +58,10 @@ public class MyUIManager : MonoBehaviour
     {
         InventoryManager data = InventoryManager.instance;
 
-        inventoryManager = data;
+        if (inventoryManager == null)
+        {
+            Debug.LogError("InventoryManager no está inicializado en MyUIManager.");
+        }
     }
 
     #region UI Interaction Methods
@@ -142,7 +145,11 @@ public class MyUIManager : MonoBehaviour
         LimitCart.SetText(inventoryManager.limiteCart.ToString());
         GemsText.SetText(inventoryManager.playerGems.ToString());
         BetText.SetText(manager.playerBet.ToString());
-    
+
+        // Actualizar las estadísticas específicas de mejoras
+        cantExLimText.SetText(inventoryManager.mejorasLimiteCompradas.ToString());
+        MultText.SetText(inventoryManager.multiplicadorRecompensas.ToString("F2")); // Formato con 2 decimales
+
         // Escuchar tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -166,6 +173,10 @@ public class MyUIManager : MonoBehaviour
         LimitCart.SetText(inventoryManager.limiteCart.ToString());
         GemsText.SetText(inventoryManager.playerGems.ToString());
         BetText.SetText(manager.playerBet.ToString());
+
+        // Actualizar las estadísticas específicas de mejoras
+        cantExLimText.SetText(inventoryManager.mejorasLimiteCompradas.ToString());
+        MultText.SetText(inventoryManager.multiplicadorRecompensas.ToString("F2")); // Formato con 2 decimales
     }
 
     public void MensajeGanarRonda(int gemas, int puntos)
