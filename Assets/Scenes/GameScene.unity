@@ -1095,15 +1095,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Deal
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 21488953a58d2b54186aac70e5974227, type: 2}
+  m_sharedMaterial: {fileID: 7717222818690103976, guid: 21488953a58d2b54186aac70e5974227, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1303,7 +1303,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 341}
+  m_AnchoredPosition: {x: 0, y: 379}
   m_SizeDelta: {x: 300, y: 70.5303}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &244996245
@@ -1328,8 +1328,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Rules
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 21488953a58d2b54186aac70e5974227, type: 2}
+  m_sharedMaterial: {fileID: 7717222818690103976, guid: 21488953a58d2b54186aac70e5974227, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1873,15 +1873,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Stand
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 21488953a58d2b54186aac70e5974227, type: 2}
+  m_sharedMaterial: {fileID: 7717222818690103976, guid: 21488953a58d2b54186aac70e5974227, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3782,7 +3782,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Options
+  m_text: Esc
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 21488953a58d2b54186aac70e5974227, type: 2}
   m_sharedMaterial: {fileID: 7717222818690103976, guid: 21488953a58d2b54186aac70e5974227, type: 2}
@@ -3816,7 +3816,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 16
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -5382,6 +5382,7 @@ MonoBehaviour:
   eventManager: {fileID: 1154124608}
   commentManager: {fileID: 1683552581}
   dialogueManager: {fileID: 1873482716}
+  sceneMusic: {fileID: 8300000, guid: 2d0a24903cb389243a1f0e2bae1f75ac, type: 3}
 --- !u!4 &1295730459
 Transform:
   m_ObjectHideFlags: 0
@@ -7066,10 +7067,14 @@ MonoBehaviour:
   dealButton: {fileID: 621980158}
   pauseMenu: {fileID: 1314723652}
   isMenuActive: 0
+  rulesPanel: {fileID: 179152953}
+  isRulesActive: 0
   playerHandValueText: {fileID: 565937029}
   dealerHandValueText: {fileID: 1650037377}
   ScoreUIText: {fileID: 1342047293}
   ObjScoreUIText: {fileID: 366706259}
+  cantExLimText: {fileID: 215689616}
+  MultText: {fileID: 262494217}
   RecordText: {fileID: 26854326}
   HandsText: {fileID: 263692413}
   RoundText: {fileID: 2132737218}
@@ -7179,9 +7184,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
-        m_MethodName: ToggleMute
+      - m_Target: {fileID: 1295730458}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: ToggleMusic
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

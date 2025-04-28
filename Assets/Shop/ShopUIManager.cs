@@ -9,6 +9,11 @@ public class ShopUIManager : MonoBehaviour
     public TextMeshProUGUI gems;
     public TextMeshProUGUI multiplier;
 
+    [Header("Cost Texts")]
+    public TextMeshProUGUI livesCost;
+    public TextMeshProUGUI limitCardsCost;
+    public TextMeshProUGUI multiplierCost;
+
     [Header("Shop Manager")]
     public ShopManager shopManager;
 
@@ -28,5 +33,9 @@ public class ShopUIManager : MonoBehaviour
         limitCards.SetText(data.limiteCart.ToString());
         gems.SetText(data.playerGems.ToString());
         multiplier.SetText(data.multiplicadorRecompensas.ToString());
+        
+        livesCost.SetText((data.mejorasVidasCompradas*50+100).ToString());
+        limitCardsCost.SetText((data.mejorasLimiteCompradas * 50 + 100).ToString());
+        multiplierCost.SetText((data.mejorasMultiplicadorCompradas * 50 + 100).ToString());
     }
 }

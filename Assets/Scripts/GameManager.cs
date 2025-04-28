@@ -9,10 +9,11 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     #region Variables Generales
-
+    [Header("inutil")]
     public Transform passiveItemParent;
     public GameObject passiveItemPrefab;
 
+    [Header("Variables de jugador")]
     public int playerGems
     {
         get => InventoryManager.instance.playerGems;
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
 
     public int limiteCart = 21;
 
+    [Header("Referencias")]
     public static GameManager instance;
 
     public DeckManager deckManager;
@@ -47,14 +49,20 @@ public class GameManager : MonoBehaviour
 
     public DealerCommentManager commentManager;
     public DealerDialogueManager dialogueManager;
-    
 
+    [Header("Musica")]
+    public AudioClip sceneMusic;
 
     #endregion
 
     #region Inicialización
     private void Start()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusic(sceneMusic);
+            AudioManager.Instance.SetVolume(0.5f);
+        }
         InventoryManager data = InventoryManager.instance;
 
         // Sincronizar estadisticas desdde el InventoryManager
@@ -250,6 +258,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("No tienes suficientes gemas para aumentar la apuesta.");
         }
+        uiManager.LimpiarMensaje();
     }
 
     #endregion
@@ -276,6 +285,7 @@ public class GameManager : MonoBehaviour
             }
         }
         UpdateScores();
+
     }
 
     public void PlayerDrawCardFaceDown(Transform player)
@@ -449,6 +459,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Turno del jugador finalizado.");
         EventManager.Instance.EndPlayerTurn();
+        uiManager.LimpiarMensaje(); //probando a limpiar el mensaje que aparecen
     }
 
     void EndRound()
@@ -591,6 +602,18 @@ public class GameManager : MonoBehaviour
         eventManager.StartRound();
     }
 
+
+    public void ToggleMusic()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ToggleMute();
+        }
+        else
+        {
+            Debug.LogError("AudioManager no encontrado.");
+        }
+    }
     #endregion
 
     #region Receptores

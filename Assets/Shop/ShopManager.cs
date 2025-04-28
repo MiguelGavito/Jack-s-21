@@ -8,7 +8,9 @@ public class ShopManager : MonoBehaviour
     public ShopUIManager shopUIManager; // Referencia al UI Manager de la tienda
 
 
-
+    [Header("Musica")]
+    public AudioClip sceneMusic;
+    [Header("inutiles")]
     public List<PassiveItem> PlayerItems;
 
     public int gems;
@@ -16,6 +18,11 @@ public class ShopManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusic(sceneMusic);
+            AudioManager.Instance.SetVolume(0.5f);
+        }
         data = InventoryManager.instance;
         PlayerItems = data.GetPlayerItems();
         gems = data.playerGems;
@@ -83,5 +90,16 @@ public class ShopManager : MonoBehaviour
     private int CalcularCostoMejora(int mejorasCompradas)
     {
         return 100 + (mejorasCompradas * 50); // Costo base de 100, aumenta 50 por cada compra
+    }
+    public void ToggleMusic()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ToggleMute();
+        }
+        else
+        {
+            Debug.LogError("AudioManager no encontrado.");
+        }
     }
 }

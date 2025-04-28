@@ -17,12 +17,21 @@ public class MyUIManager : MonoBehaviour
     public GameObject pauseMenu;
     public bool isMenuActive = false;
 
+    [Header("Cuadre de Reglas")]
+    public GameObject rulesPanel;
+    public bool isRulesActive = false;
+
+
     [Header("Puntaciones")]
     public TextMeshProUGUI playerHandValueText;
     public TextMeshProUGUI dealerHandValueText;
 
     public TextMeshProUGUI ScoreUIText;
     public TextMeshProUGUI ObjScoreUIText;
+
+    [Header("Modi de Estadisticas")]
+    public TextMeshProUGUI cantExLimText;
+    public TextMeshProUGUI MultText;
 
     [Header("UI References")]
     public TextMeshProUGUI RecordText;
@@ -83,6 +92,22 @@ public class MyUIManager : MonoBehaviour
             Time.timeScale = 1f;
         }
     }
+
+    public void ToggleRulesPanel()
+    {
+        isRulesActive = !isRulesActive;
+
+        rulesPanel.SetActive(isRulesActive);
+
+        if (isRulesActive)
+        {
+            Time.timeScale = 0f; //Pause the game
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
+    }
     #endregion
 
     #region Hand Value Updates
@@ -123,6 +148,12 @@ public class MyUIManager : MonoBehaviour
         {
             TogglePauseMenu();
         }
+
+        // Escuchar tecla de Enter
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            ToggleRulesPanel();
+        }
     }
 
     public void UpdateUI()
@@ -139,19 +170,19 @@ public class MyUIManager : MonoBehaviour
 
     public void MensajeGanarRonda(int gemas, int puntos)
     {
-        string mensaje = $"¡You Won the round! Obtuviste {puntos} puntos y {gemas} gemas.";
+        string mensaje = $"You Won the round! You earned {puntos} points and {gemas} gems.";
         roundMessenger.Announce(mensaje);
     }
 
     public void MensajePerderRonda()
     {
-        string mensaje = $"Perdiste la ronda. Pierdes una vida. Pierdes la mitad de tu apuesta.";
+        string mensaje = $"You lost the round. You lose one life. You lose half of your bet.";
         roundMessenger.Announce(mensaje);
     }
 
     public void MensajePerderJuego()
     {
-        string mensaje = "¡Game Over! Mejor suerte la próxima.";
+        string mensaje = "Game Over! Better luck next time.";
         roundMessenger.Announce(mensaje);
     }
 
