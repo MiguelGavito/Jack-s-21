@@ -129,12 +129,43 @@ public class DeckManager : MonoBehaviour
             deck.Push(deckList[randomIndex]);
             deckList.RemoveAt(randomIndex);
         }
+
         // Reproducir el sonido de barajar
         if (BarajarSound != null)
         {
             BarajarSound.Play();
             StartCoroutine(StopShuffleSoundAfterDelay(2f));
         }
+
+        // Comprobar si el mazo está bien revuelto
+        if (IsDeckShuffled(deckList))
+        {
+            Debug.Log("El mazo ha sido revuelto correctamente.");
+        }
+        else
+        {
+            Debug.LogWarning("El mazo no parece estar bien revuelto.");
+        }
+    }
+
+    private bool IsDeckShuffled(List<GameObject> originalDeck)
+    {
+        // Convertir el mazo actual a una lista para comparar
+        List<GameObject> shuffledDeck = new List<GameObject>(deck);
+
+        // Contar cuántas cartas están en la misma posición
+        int samePositionCount = 0;
+        for (int i = 0; i < originalDeck.Count; i++)
+        {
+            if (originalDeck[i] == shuffledDeck[i])
+            {
+                samePositionCount++;
+            }
+        }
+
+        // Si más del 20% de las cartas están en la misma posición, consideramos que no está bien revuelto
+        float threshold = originalDeck.Count * 0.2f;
+        return samePositionCount <= threshold;
     }
 
     private IEnumerator StopShuffleSoundAfterDelay(float delay)
