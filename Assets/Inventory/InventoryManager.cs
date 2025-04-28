@@ -42,6 +42,8 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+
+
     public void AddPassiveItem(IPassiveEffect effect)
     {
         // Crear una nueva instancia del prefab
