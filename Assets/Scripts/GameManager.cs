@@ -57,11 +57,12 @@ public class GameManager : MonoBehaviour
     {
         InventoryManager data = InventoryManager.instance;
 
+        // Sincronizar estadisticas desdde el InventoryManager
+        SincronizarEstadisticas();
+
         int playergems = data.playerGems;
         puntajeObj = data.PuntajeObjetivo;
         round = data.round;
-
-        LoadPassiveItems();
 
         //Reinciiar valores de la ronda
         puntaje = 0;
@@ -90,17 +91,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void LoadPassiveItems()
+    private void SincronizarEstadisticas()
     {
-        foreach (PassiveItem item in InventoryManager.instance.GetPlayerItems())
-        {
-            GameObject newItemObject = Instantiate(passiveItemPrefab, passiveItemParent);
+        InventoryManager data = InventoryManager.instance;
 
-            PassiveItemDisplay display = newItemObject.GetComponent<PassiveItemDisplay>();
-            display.SetItem(item as PassiveItem); // Castear el item para usarlo en el display
-
-            newItemObject.transform.localScale = Vector3.one;
-        }
+        limiteCart = data.limiteCart;
+        lives = data.lives;
+        playerGems = data.playerGems;
     }
 
     private void OnDestroy()
@@ -167,6 +164,8 @@ public class GameManager : MonoBehaviour
     //Esta funcion genera muchos problemas, creo que hasta convendria quitarla pero pierde sentido la modulacion si asi lo hago
     public IEnumerator StartNewRound()
     {
+        SincronizarEstadisticas();
+
         Debug.Log("startnweround ejecuta setupnewroundcoroutine");
         //StartCoroutine(SetupNewRoundCoroutine());
         PlayerDrawCard(player1Transform);
@@ -454,6 +453,11 @@ public class GameManager : MonoBehaviour
 
     void EndRound()
     {
+        StartCoroutine(EndRoundWithDelay());
+    }
+
+    private IEnumerator EndRoundWithDelay()
+    {
         UpdateScores();
 
         int playerScore = GetPlayerHandValue(player1Transform);
@@ -475,36 +479,39 @@ public class GameManager : MonoBehaviour
             Debug.Log($"El jugador se pasó de {limiteCart} y ha perdido.");
             dialogueManager.Say(commentManager.GetRandomComment("playerBust"));
             uiManager.MensajePerderRonda();
-            lives--;
+
+            InventoryManager.instance.lives--;
+            playerBet = Mathf.FloorToInt(playerBet / 2);
+            SincronizarEstadisticas();
         }
         else if (dealerBust)
         {
             Debug.Log($"El dealer se pasó de {limiteCart}, el jugador gana.");
             dialogueManager.Say(commentManager.GetRandomComment("dealerBust"));
-            puntajeExt = 20;
+            puntajeExt = Mathf.RoundToInt(20 * InventoryManager.instance.multiplicadorRecompensas);
             if (playerScore == 21)
             {
-                puntajeExt += 25;
+                puntajeExt += Mathf.RoundToInt(25 * InventoryManager.instance.multiplicadorRecompensas);
                 dialogueManager.Say(commentManager.GetRandomComment("playerBlackjack"));
             }
-            gemasExt = playerBet * 2;
+            gemasExt = Mathf.RoundToInt(playerBet * 2 * InventoryManager.instance.multiplicadorRecompensas);
 
             puntaje += puntajeExt;
-            playerGems += gemasExt;
+            InventoryManager.instance.playerGems += gemasExt;
 
             uiManager.MensajeGanarRonda(gemasExt, puntajeExt);
         }
         else if (playerScore > dealerScore)
         {
             Debug.Log($"El jugador gana con {playerScore} puntos contra {dealerScore} del dealer.");
-            
+
             dialogueManager.Say(commentManager.GetRandomComment("playerWin"));
 
-            puntajeExt = (playerScore - dealerScore) * 5 + 20;
+            puntajeExt = Mathf.RoundToInt(((playerScore - dealerScore) * 5 + 20) * InventoryManager.instance.multiplicadorRecompensas);
             puntaje += puntajeExt;
 
-            gemasExt = playerBet * 3;
-            playerGems += gemasExt;
+            gemasExt = Mathf.RoundToInt(playerBet * 3 * InventoryManager.instance.multiplicadorRecompensas);
+            InventoryManager.instance.playerGems += gemasExt;
 
             uiManager.MensajeGanarRonda(gemasExt, puntajeExt);
         }
@@ -513,21 +520,28 @@ public class GameManager : MonoBehaviour
             Debug.Log($"El dealer gana con {dealerScore} puntos contra {playerScore} del jugador.");
             uiManager.MensajePerderRonda();
             dialogueManager.Say(commentManager.GetRandomComment("dealerWin"));
-            lives--;
+            InventoryManager.instance.lives--;
+            playerBet = Mathf.FloorToInt(playerBet / 2);
+            SincronizarEstadisticas();
         }
         else
         {
-            puntaje += 15;
-            playerGems += playerBet;
+            puntajeExt = Mathf.RoundToInt(15 * InventoryManager.instance.multiplicadorRecompensas);
+            puntaje += puntajeExt;
+
+            gemasExt = Mathf.RoundToInt(playerBet * InventoryManager.instance.multiplicadorRecompensas);
+            InventoryManager.instance.playerGems += gemasExt;
             Debug.Log("Es un empate.");
-            uiManager.MensajeEmpate(playerBet, 15);
+            uiManager.MensajeEmpate(puntajeExt, gemasExt);
             dialogueManager.Say(commentManager.GetRandomComment("draw"));
-            
+
         }
 
-        if (lives > 0)
+        yield return new WaitForSeconds(1f);
+
+        if (InventoryManager.instance.lives > 0)
         {
-            
+
 
             Debug.Log("Preparando nueva ronda...");
             StartCoroutine(DelayedStartRound());
@@ -536,15 +550,18 @@ public class GameManager : MonoBehaviour
         {
             //mensaje de que perdiste
             uiManager.MensajePerderJuego();
-            
+
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
             dialogueManager.Say(commentManager.GetRandomComment("dealerWin")); // comentario final opcional
+
+            // Esperar 1 segundo antes de terminar el juego
+            yield return new WaitForSeconds(1f);
             
-            
-            // Resetear valores en el InventoryManager para una nueva partida
-            InventoryManager.instance.ResetInventory();
 
             SceneManager.LoadScene(0); // Cargar pantalla de inicio
+
+            // Resetear valores en el InventoryManager para una nueva partida
+            InventoryManager.instance.ResetInventory();
         }
 
         // Codigo para actualizar record
@@ -556,8 +573,12 @@ public class GameManager : MonoBehaviour
         if (puntaje > puntajeObj)
         {
             // Guardar progreso de ronda y gemas
-            
+
             InventoryManager.instance.AvanzarRound();
+
+            // Esperar 1 segundo antes de cargar la tienda
+            yield return new WaitForSeconds(1f);
+
             SceneManager.LoadScene(2); // cargar tienda
         }
 
@@ -566,7 +587,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DelayedStartRound()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(3f);
         eventManager.StartRound();
     }
 

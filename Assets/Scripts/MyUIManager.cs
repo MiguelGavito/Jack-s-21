@@ -110,21 +110,14 @@ public class MyUIManager : MonoBehaviour
     void Update()
     {
         ScoreUIText.SetText(manager.puntaje.ToString());
-
-        HandsText.SetText(manager.lives.ToString());
-
+        HandsText.SetText(inventoryManager.lives.ToString());
         ObjScoreUIText.SetText(manager.puntajeObj.ToString());
-
         RecordText.SetText(manager.record.ToString());
-
-        RoundText.SetText(manager.round.ToString());
-
-        LimitCart.SetText(manager.limiteCart.ToString());
-
-        GemsText.SetText(manager.playerGems.ToString());
-
+        RoundText.SetText(inventoryManager.round.ToString());
+        LimitCart.SetText(inventoryManager.limiteCart.ToString());
+        GemsText.SetText(inventoryManager.playerGems.ToString());
         BetText.SetText(manager.playerBet.ToString());
-
+    
         // Escuchar tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -134,28 +127,14 @@ public class MyUIManager : MonoBehaviour
 
     public void UpdateUI()
     {
-        // Actualiza el puntaje del jugador
         ScoreUIText.SetText(manager.puntaje.ToString());
-
-        // Actualiza las vidas del jugador
-        HandsText.SetText(manager.lives.ToString());
-
-        // Actualiza el puntaje objetivo de la ronda
+        HandsText.SetText(inventoryManager.lives.ToString());
         ObjScoreUIText.SetText(manager.puntajeObj.ToString());
-
+        RecordText.SetText(manager.record.ToString());
         RoundText.SetText(inventoryManager.round.ToString());
-
-        LimitCart.SetText(manager.limiteCart.ToString());
-
+        LimitCart.SetText(inventoryManager.limiteCart.ToString());
         GemsText.SetText(inventoryManager.playerGems.ToString());
-
         BetText.SetText(manager.playerBet.ToString());
-
-        // Actualiza el record (puntaje más alto)
-        if (RecordText != null)
-        {
-            RecordText.SetText(manager.record.ToString());
-        }
     }
 
     public void MensajeGanarRonda(int gemas, int puntos)
@@ -166,7 +145,7 @@ public class MyUIManager : MonoBehaviour
 
     public void MensajePerderRonda()
     {
-        string mensaje = $"Perdiste la ronda. Pierdes una vida. Pierdes tu apuesta.";
+        string mensaje = $"Perdiste la ronda. Pierdes una vida. Pierdes la mitad de tu apuesta.";
         roundMessenger.Announce(mensaje);
     }
 
@@ -182,5 +161,10 @@ public class MyUIManager : MonoBehaviour
         roundMessenger.Announce(mensaje);
     }
 
+    public void LimpiarMensaje()
+    {
+        string mensaje = "";
+        roundMessenger.Announce(mensaje);
+    }
     #endregion
 }
