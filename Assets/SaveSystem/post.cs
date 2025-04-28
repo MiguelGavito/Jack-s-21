@@ -4,16 +4,16 @@ using UnityEngine.Networking;
 
 public class SendHighScore : MonoBehaviour
 {
-    private string apiUrl = "http://localhost:5000/users/";
+    private string apiUrl = "https://api-crm-livid.vercel.app/";
 
-    public void EnviarHighScore(int playerID, int highScore)
+    public void EnviarHighScore(int OwnerID, int highScore)
     {
-        StartCoroutine(PostHighScore(playerID, highScore));
+        StartCoroutine(PostHighScore(OwnerID, highScore));
     }
 
-    IEnumerator PostHighScore(int playerID, int highScore)
+    IEnumerator PostHighScore(int OwnerID, int highScore)
     {
-        string fullURL = apiUrl + playerID + "/highscore";
+        string fullURL = apiUrl + OwnerID + "/highscore";
 
         // Creamos el objeto con el score
         HighScoreData data = new HighScoreData { highScore = highScore };

@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 public class LoadPlayerScore : MonoBehaviour
 {
-    private string APIurl = "http://localhost:5000/";
+    private string APIurl = "https://api-crm-livid.vercel.app/";
     private int OwnerID;
 
     void Start()
