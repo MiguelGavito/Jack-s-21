@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.XR;
 using Unity.VisualScripting;
+using System.Collections;
 
 public class DeckManager : MonoBehaviour
 {
@@ -132,12 +133,22 @@ public class DeckManager : MonoBehaviour
         if (BarajarSound != null)
         {
             BarajarSound.Play();
+            StartCoroutine(StopShuffleSoundAfterDelay(2f));
+        }
+    }
+
+    private IEnumerator StopShuffleSoundAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (BarajarSound.isPlaying)
+        {
+            BarajarSound.Stop();
         }
     }
     #endregion
 
     #region Card Drawing
-    
+
     //Funcion para mover cartas entre transforms
     public Card MoveCard(Transform StartTransform, Transform EndTransform, int index)
     {

@@ -413,11 +413,13 @@ public class GameManager : MonoBehaviour
     public void PlayerTurn()
     {
         Debug.Log("Empieza turno del jugador");
+        uiManager.UpdateUI(); // Actualizar la UI para reflejar el cambio
     }
 
     public void DealerTurn()
     {
         Debug.Log("Empieza turno del dealer");
+        uiManager.UpdateUI(); // Actualizar la UI para reflejar el cambio
         StartCoroutine(DealerPlays());
     }
 
@@ -518,10 +520,11 @@ public class GameManager : MonoBehaviour
 
             dialogueManager.Say(commentManager.GetRandomComment("playerWin"));
 
-            puntajeExt = Mathf.RoundToInt(((playerScore - dealerScore) * 5 + 20) * InventoryManager.instance.multiplicadorRecompensas);
+            float roundMultiplier = 1f + (round * 0.1f); // Incrementa un 10% por cada ronda
+            puntajeExt = Mathf.RoundToInt(((playerScore - dealerScore) * 5 + 20) * InventoryManager.instance.multiplicadorRecompensas * roundMultiplier);
             puntaje += puntajeExt;
 
-            gemasExt = Mathf.RoundToInt(playerBet * 3 * InventoryManager.instance.multiplicadorRecompensas);
+            gemasExt = Mathf.RoundToInt(playerBet * 3 * InventoryManager.instance.multiplicadorRecompensas) + 10; // Incrementar en 10
             InventoryManager.instance.playerGems += gemasExt;
 
             uiManager.MensajeGanarRonda(gemasExt, puntajeExt);
@@ -540,13 +543,13 @@ public class GameManager : MonoBehaviour
             puntajeExt = Mathf.RoundToInt(15 * InventoryManager.instance.multiplicadorRecompensas);
             puntaje += puntajeExt;
 
-            gemasExt = Mathf.RoundToInt(playerBet * InventoryManager.instance.multiplicadorRecompensas);
+            gemasExt = Mathf.RoundToInt(playerBet * InventoryManager.instance.multiplicadorRecompensas) + 10; // Incrementar en 10
             InventoryManager.instance.playerGems += gemasExt;
             Debug.Log("Es un empate.");
             uiManager.MensajeEmpate(puntajeExt, gemasExt);
             dialogueManager.Say(commentManager.GetRandomComment("draw"));
-
         }
+
 
         yield return new WaitForSeconds(1f);
 
@@ -581,7 +584,7 @@ public class GameManager : MonoBehaviour
             record = puntaje;
             SaveManager.SaveHighScore(record); // Guardamos el nuevo puntaje más alto.
         }
-        if (puntaje > puntajeObj)
+        if (puntaje >= puntajeObj)
         {
             // Guardar progreso de ronda y gemas
 
