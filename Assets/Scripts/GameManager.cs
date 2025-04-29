@@ -144,17 +144,6 @@ public class GameManager : MonoBehaviour
         // También podrías resetear flags o pasivos si tienes
     }
 
-    public void NuevaPartida()
-    {
-        InventoryManager.instance.ResetInventory(); // Borra gemas, ronda, ítems, etc.
-        SceneManager.LoadScene("GameScene"); // Cambia por el nombre de tu escena del juego
-    }
-
-    // Método para aplicar el efecto pasivo de un objeto
-    public void ApplyPassiveEffect(PassiveItem item)
-    {
-        item.UseItem(this);  // Llama directamente al UseItem para aplicar el efecto
-    }
 
     public void LimpiarManos()
     {
@@ -187,6 +176,15 @@ public class GameManager : MonoBehaviour
 
         PlayerDrawCard(player2Transform);
         yield return new WaitForSeconds(0.5f);
+    }
+
+    private IEnumerator CargarEscenaAsync(string sceneName)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
     }
 
     private IEnumerator SetupNewRoundCoroutine()
@@ -555,8 +553,6 @@ public class GameManager : MonoBehaviour
 
         if (InventoryManager.instance.lives > 0)
         {
-
-
             Debug.Log("Preparando nueva ronda...");
             StartCoroutine(DelayedStartRound());
         }
@@ -564,16 +560,13 @@ public class GameManager : MonoBehaviour
         {
             //mensaje de que perdiste
             uiManager.MensajePerderJuego();
-
             Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
             dialogueManager.Say(commentManager.GetRandomComment("dealerWin")); // comentario final opcional
 
             // Esperar 1 segundo antes de terminar el juego
             yield return new WaitForSeconds(1f);
-            
 
-            SceneManager.LoadScene(0); // Cargar pantalla de inicio
-
+            yield return StartCoroutine(CargarEscenaAsync("MenuScene"));
             // Resetear valores en el InventoryManager para una nueva partida
             InventoryManager.instance.ResetInventory();
         }
@@ -593,7 +586,7 @@ public class GameManager : MonoBehaviour
             // Esperar 1 segundo antes de cargar la tienda
             yield return new WaitForSeconds(1f);
 
-            SceneManager.LoadScene(2); // cargar tienda
+            yield return StartCoroutine(CargarEscenaAsync("ShopScene"));
         }
 
         uiManager.UpdateUI();

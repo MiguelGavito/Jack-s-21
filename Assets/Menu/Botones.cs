@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,13 +7,13 @@ public class Botones : MonoBehaviour
 {
     public void Inicio()
     {
-        SceneManager.LoadScene(1);
+        StartCoroutine(CargarEscenaAsync(1)); // Cambiar a carga asíncrona
     }
 
     public void InicioNuevoJuego()
     {
         InventoryManager.instance.ResetInventory();
-        SceneManager.LoadScene(1);
+        StartCoroutine(CargarEscenaAsync(1)); // Cambiar a carga asíncrona
     }
 
     public void Salir()
@@ -26,7 +27,7 @@ public class Botones : MonoBehaviour
 
     public void Shop()
     {
-        SceneManager.LoadScene (2);
+        StartCoroutine(CargarEscenaAsync(2)); // Cambiar a carga asíncrona
     }
 
     public void Menu()
@@ -34,6 +35,15 @@ public class Botones : MonoBehaviour
         //esto seria el boton de ir al menu y perder progreso
         InventoryManager.instance.ResetInventory(); // reiniciamos el inventario
 
-        SceneManager.LoadScene(0); // Volver al menú
+        StartCoroutine(CargarEscenaAsync(0)); // Cambiar a carga asíncrona
+    }
+
+    private IEnumerator CargarEscenaAsync(int sceneIndex)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneIndex);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
     }
 }
