@@ -19,7 +19,7 @@ public class MyUIManager : MonoBehaviour
 
     [Header("Cuadre de Reglas")]
     public GameObject rulesPanel;
-    public bool isRulesActive = false;
+    public bool isRulesActive = true;
 
 
     [Header("Puntaciones")]
