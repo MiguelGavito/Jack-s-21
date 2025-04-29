@@ -130,7 +130,7 @@ public class EventManager : MonoBehaviour
 
     public void EndDealerTurn()
     {
-        StartCoroutine(TransitionToEndRound());
+        StartRound();
         gameManager.FlipDealerCards();
     }
 

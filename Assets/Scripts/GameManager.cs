@@ -147,7 +147,28 @@ public class GameManager : MonoBehaviour
     public void NuevaPartida()
     {
         InventoryManager.instance.ResetInventory(); // Borra gemas, ronda, ítems, etc.
-        SceneManager.LoadScene("GameScene"); // Cambia por el nombre de tu escena del juego
+        StartCoroutine(CargarEscenaAsync("GameScene")); // Camb
+    }
+
+
+    private IEnumerator CargarEscenaAsync(string sceneName)
+    {
+        Debug.Log($"Cargando escena: {sceneName}");
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        asyncLoad.allowSceneActivation = false;
+
+        while (!asyncLoad.isDone)
+        {
+            if (asyncLoad.progress >= 0.9f)
+            {
+                Debug.Log("Escena cargada. Activando...");
+                asyncLoad.allowSceneActivation = true;
+            }
+            yield return null;
+        }
+
+        Debug.Log("Cambio de escena completado.");
     }
 
     // Método para aplicar el efecto pasivo de un objeto
@@ -175,40 +196,22 @@ public class GameManager : MonoBehaviour
         SincronizarEstadisticas();
 
         Debug.Log("startnweround ejecuta setupnewroundcoroutine");
+        StopCoroutine(DealInitialCards());
         //StartCoroutine(SetupNewRoundCoroutine());
-        PlayerDrawCard(player1Transform);
         yield return new WaitForSeconds(0.5f); // o incluso 0.01f puede servir
-
         PlayerDrawCard(player1Transform);
-        yield return new WaitForSeconds(0.5f);
 
+        yield return new WaitForSeconds(0.5f);
+        PlayerDrawCard(player1Transform);
+
+        yield return new WaitForSeconds(0.5f);
         PlayerDrawCardFaceDown(player2Transform);
-        yield return new WaitForSeconds(0.5f);
 
+        yield return new WaitForSeconds(0.5f);
         PlayerDrawCard(player2Transform);
-        yield return new WaitForSeconds(0.5f);
-    }
-
-    private IEnumerator SetupNewRoundCoroutine()
-    {
         
-
-        PlayerDrawCard(player1Transform);
-        yield return new WaitForSeconds(1f); // o incluso 0.01f puede servir
-
-        PlayerDrawCard(player1Transform);
-        //yield return new WaitForSeconds(1f);
-
-        PlayerDrawCardFaceDown(player2Transform);
-        //yield return new WaitForSeconds(1f);
-
-        PlayerDrawCard(player2Transform);
-        //yield return new WaitForSeconds(1f);
-
-        UpdateScores();
-
-        Debug.Log("Para este punto deben estar las cartas en su lugar");
     }
+
 
 
 
@@ -572,7 +575,9 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             
 
-            SceneManager.LoadScene(0); // Cargar pantalla de inicio
+            StartCoroutine(CargarEscenaAsync("MainMenu")); // Cambia "MainMenu" por el nombre de tu escena de inicio
+
+
 
             // Resetear valores en el InventoryManager para una nueva partida
             InventoryManager.instance.ResetInventory();
@@ -593,7 +598,36 @@ public class GameManager : MonoBehaviour
             // Esperar 1 segundo antes de cargar la tienda
             yield return new WaitForSeconds(1f);
 
-            SceneManager.LoadScene(2); // cargar tienda
+            StartCoroutine(CargarEscenaAsync("ShopScene"));
+        }
+
+        if (InventoryManager.instance.lives > 0)
+        {
+            Debug.Log("Preparando nueva ronda...");
+            StartCoroutine(DelayedStartRound());
+        }
+        else
+        {
+            uiManager.MensajePerderJuego();
+            Debug.Log("El jugador se quedó sin vidas. Fin del juego.");
+            dialogueManager.Say(commentManager.GetRandomComment("dealerWin"));
+
+            yield return new WaitForSeconds(1f);
+
+            // Cambiar a pantalla de inicio
+            yield return StartCoroutine(CargarEscenaAsync("MainMenu")); // Cambia "MainMenu" por el nombre de tu escena de inicio
+
+            InventoryManager.instance.ResetInventory();
+        }
+
+        if (puntaje >= puntajeObj)
+        {
+            InventoryManager.instance.AvanzarRound();
+
+            yield return new WaitForSeconds(1f);
+
+            // Cambiar a la tienda
+            yield return StartCoroutine(CargarEscenaAsync("ShopScene")); // Cambia "ShopScene" por el nombre de tu escena de tienda
         }
 
         uiManager.UpdateUI();
