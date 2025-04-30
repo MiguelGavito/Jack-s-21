@@ -39,31 +39,33 @@ public class DealerDialogueManager : MonoBehaviour
         }
     }
 
-    public void Say(string type)
+    public void Say(string message)
     {
+        if (apiKeyInput != null)
+        {
+            geminiAPI.SetApiKey(apiKeyInput.text); // Actualiza la clave API
+        }
         if (dynamicDialogueToggle.isOn && geminiAPI != null)
         {
             // Usar diálogo dinámico
-            StartCoroutine(SayDynamic(type));
+            StartCoroutine(SayDynamic(message));
         }
         else
         {
-            // Usar diálogo estático
-            SayStatic(type);
+            // Usar diálogo estático con el mensaje directamente
+            SayStatic(message);
         }
     }
 
-    private void SayStatic(string type)
+    private void SayStatic(string message)
     {
-        if (staticDialogues != null && staticDialogues.ContainsKey(type))
+        if (!string.IsNullOrEmpty(message))
         {
-            string[] phrases = staticDialogues[type];
-            string randomPhrase = phrases[UnityEngine.Random.Range(0, phrases.Length)];
-            StartCoroutine(TypeText(randomPhrase));
+            StartCoroutine(TypeText(message));
         }
         else
         {
-            UnityEngine.Debug.LogWarning($"No se encontraron frases para el tipo: {type}");
+            UnityEngine.Debug.LogWarning("El mensaje proporcionado está vacío o es nulo.");
         }
     }
 

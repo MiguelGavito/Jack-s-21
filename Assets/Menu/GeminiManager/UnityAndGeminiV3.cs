@@ -117,7 +117,7 @@ public class UnityAndGeminiV3: MonoBehaviour
 
             if (www.result != UnityWebRequest.Result.Success)
             {
-                UnityEngine.Debug.LogError(www.error);
+                UnityEngine.Debug.LogError("Error de conexion");
                 lastResponse = ""; // Respuesta vacía en caso de error
             }
             else
