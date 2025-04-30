@@ -3009,7 +3009,6 @@ GameObject:
   - component: {fileID: 1028302425}
   - component: {fileID: 1028302424}
   - component: {fileID: 1028302430}
-  - component: {fileID: 1028302431}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3156,26 +3155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068ab7aa14fa0284295a1f73df9065d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1028302431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028302423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cfcc7cb837fbb7448804109897284f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lives: {fileID: 0}
-  limitCards: {fileID: 0}
-  gems: {fileID: 0}
-  multiplier: {fileID: 0}
-  livesCost: {fileID: 0}
-  limitCardsCost: {fileID: 0}
-  multiplierCost: {fileID: 0}
-  shopManager: {fileID: 0}
 --- !u!1 &1143920220
 GameObject:
   m_ObjectHideFlags: 0

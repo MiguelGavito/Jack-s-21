@@ -63,10 +63,17 @@ public class GameManager : MonoBehaviour
             AudioManager.Instance.PlayMusic(sceneMusic);
             AudioManager.Instance.SetVolume(0.5f);
         }
-        InventoryManager data = InventoryManager.instance;
+        
 
+        // Verificar que InventoryManager esté inicializado
+        if (InventoryManager.instance == null)
+        {
+            Debug.LogError("InventoryManager no está inicializado. Asegúrate de que persista entre escenas.");
+            return;
+        }
         // Sincronizar estadisticas desdde el InventoryManager
         SincronizarEstadisticas();
+        InventoryManager data = InventoryManager.instance;
 
         int playergems = data.playerGems;
         puntajeObj = data.PuntajeObjetivo;
@@ -97,6 +104,9 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("GameManager: EventManager.Instance es null en Start()");
         }
+
+        // Actualizar la UI después de sincronizar estadísticas
+        uiManager.UpdateUI();
     }
 
     private void SincronizarEstadisticas()
@@ -163,19 +173,33 @@ public class GameManager : MonoBehaviour
     {
         SincronizarEstadisticas();
 
-        Debug.Log("startnweround ejecuta setupnewroundcoroutine");
-        //StartCoroutine(SetupNewRoundCoroutine());
-        PlayerDrawCard(player1Transform);
-        yield return new WaitForSeconds(0.5f); // o incluso 0.01f puede servir
-
+        Debug.Log("StartNewRound: Robando primera carta para el jugador");
+        if (player1Transform == null || deckManager == null)
+        {
+            Debug.LogError("StartNewRound: player1Transform o deckManager es null.");
+            yield break;
+        }
         PlayerDrawCard(player1Transform);
         yield return new WaitForSeconds(0.5f);
 
+        Debug.Log("StartNewRound: Robando segunda carta para el jugador");
+        PlayerDrawCard(player1Transform);
+        yield return new WaitForSeconds(0.5f);
+
+        Debug.Log("StartNewRound: Robando carta oculta para el dealer");
+        if (player2Transform == null)
+        {
+            Debug.LogError("StartNewRound: player2Transform es null.");
+            yield break;
+        }
         PlayerDrawCardFaceDown(player2Transform);
         yield return new WaitForSeconds(0.5f);
 
+        Debug.Log("StartNewRound: Robando segunda carta para el dealer");
         PlayerDrawCard(player2Transform);
         yield return new WaitForSeconds(0.5f);
+
+        Debug.Log("StartNewRound: Finalizado");
     }
 
     private IEnumerator CargarEscenaAsync(string sceneName)
@@ -273,6 +297,12 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDrawCard(Transform player)
     {
+        if (deckManager == null || player == null)
+        {
+            Debug.LogError("PlayerDrawCard: deckManager o player es null.");
+            return;
+        }
+
         Debug.Log($"Robar una carta a {player}");
         if (player.childCount <= 5)
         {
@@ -411,7 +441,22 @@ public class GameManager : MonoBehaviour
     public void PlayerTurn()
     {
         Debug.Log("Empieza turno del jugador");
-        uiManager.UpdateUI(); // Actualizar la UI para reflejar el cambio
+        if (uiManager != null)
+        {
+            try
+            {
+                uiManager.UpdateUI(); // Actualizar la UI para reflejar el cambio
+                Debug.Log("PlayerTurn: UI actualizada correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error en PlayerTurn -> UpdateUI: {ex.Message}");
+            }
+        }
+        else
+        {
+            Debug.LogError("GameManager: uiManager no está configurado.");
+        }
     }
 
     public void DealerTurn()
@@ -568,7 +613,8 @@ public class GameManager : MonoBehaviour
 
             yield return StartCoroutine(CargarEscenaAsync("MenuScene"));
             // Resetear valores en el InventoryManager para una nueva partida
-            InventoryManager.instance.ResetInventory();
+
+            InventoryManager.instance?.DestroyInventory();
         }
 
         // Codigo para actualizar record

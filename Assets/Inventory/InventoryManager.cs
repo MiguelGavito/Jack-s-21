@@ -6,8 +6,6 @@ public class InventoryManager : MonoBehaviour
 {
     [Header("Instancia")]
     public static InventoryManager instance;
-    [Header("Referencias")]
-    public GameManager gameManager;
 
     [Header("Cosas Inutiles")]
     public GameObject passiveItemPrefab;
@@ -43,24 +41,6 @@ public class InventoryManager : MonoBehaviour
     }
 
 
-
-    public void AddPassiveItem(IPassiveEffect effect)
-    {
-        // Crear una nueva instancia del prefab
-        GameObject newPassiveItemObject = Instantiate(passiveItemPrefab);
-
-        // Obtener el script del PassiveItem
-        PassiveItem passiveItem = newPassiveItemObject.GetComponent<PassiveItem>();
-
-
-        // Ahora puedes asignar este PassiveItem al display
-        PassiveItemDisplay display = newPassiveItemObject.GetComponent<PassiveItemDisplay>();
-        display.SetItem(passiveItem);
-
-        // Si tienes un GameManager y quieres aplicar el efecto
-        passiveItem.UseItem(gameManager);
-    }
-
     public void ResetInventory()
     {
         playerItems = new List<PassiveItem>();  // Aquí guardamos los objetos del jugador
@@ -93,13 +73,6 @@ public class InventoryManager : MonoBehaviour
         mejorasMultiplicadorCompradas++;
     }
 
-    // Añadir objeto al inventario
-    public void AddItem(PassiveItem item)
-    {
-        playerItems.Add(item);
-        item.ApplyEffect(GameManager.instance); // Aplica el efecto pasivo
-    }
-
     // Obtener los objetos del jugador
     public List<PassiveItem> GetPlayerItems()
     {
@@ -129,5 +102,15 @@ public class InventoryManager : MonoBehaviour
     public void AgregarGemas(int cantidad)
     {
         playerGems += cantidad;
+    }
+    public void Initialize()
+    {
+        // Aquí puedes inicializar cualquier dato necesario
+        Debug.Log("InventoryManager inicializado correctamente.");
+    }
+    public void DestroyInventory()
+    {
+        instance = null; // Limpiar la referencia estática
+        Destroy(gameObject); // Destruir el objeto
     }
 }

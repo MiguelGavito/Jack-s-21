@@ -82,17 +82,25 @@ public class EventManager : MonoBehaviour
     // Métodos para manejar los turnos y rondas
     public void StartRound()
     {
-
         Debug.Log("== INICIO DE NUEVA RONDA ==");
+        StartCoroutine(StartRoundCoroutine());
+    }
 
+    private IEnumerator StartRoundCoroutine()
+    {
         SetCurrentTurn(TurnState.PlayerTurn);
 
         gameManager.LimpiarManos();
-        StartCoroutine(gameManager.StartNewRound()); // toma 2 cartas player
-        Debug.Log("Empieza StartRound se va aejecutar SetupNewRound y se robaran 2 cartas del jugador y dos para el dealer");
-        Debug.Log("antes de esto se llama el StartNewRound pero no se roba bien hasta luego de esto");
+
+        // Esperar a que StartNewRound termine
+        yield return StartCoroutine(gameManager.StartNewRound());
+
+        Debug.Log("StartNewRound ha terminado, ahora comienza el turno del jugador");
+
+        // Invocar el evento del turno del jugador
         OnPlayerTurn?.Invoke();
-        
+
+        // Actualizar puntajes y UI
         gameManager.UpdateScores();
         uiManager.UpdateUI();
         uiManager.SetButtonsInteractable(true);

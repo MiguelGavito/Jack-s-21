@@ -21,8 +21,13 @@ public class ShopUIManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        data = InventoryManager.instance;
+        if (InventoryManager.instance == null)
+        {
+            Debug.LogError("InventoryManager.instance es null. Asegúrate de que InventoryManager esté presente en la escena.");
+            return;
+        }
 
+        data = InventoryManager.instance;
         UpdateUI();
     }
 

@@ -56,11 +56,23 @@ public class MyUIManager : MonoBehaviour
 
     private void Start()
     {
-        InventoryManager data = InventoryManager.instance;
 
+        ReconnectInventoryManager();
+
+        // Asegurarse de que InventoryManager esté referenciado
         if (inventoryManager == null)
         {
-            Debug.LogError("InventoryManager no está inicializado en MyUIManager.");
+            inventoryManager = InventoryManager.instance;
+            if (inventoryManager == null)
+            {
+                Debug.LogError("No se encontró una instancia de InventoryManager.");
+            }
+        }
+
+        // Actualizar la UI si las referencias están configuradas
+        if (manager != null && inventoryManager != null)
+        {
+            UpdateUI();
         }
     }
 
@@ -96,6 +108,20 @@ public class MyUIManager : MonoBehaviour
         }
     }
 
+    public void CloseMenu()
+    {
+        isMenuActive = false;
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1f; // Resume the game
+    }
+    
+    public void OpenMenu()
+    {
+        isMenuActive = true;
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0f; // Pause the game
+    }
+
     public void ToggleRulesPanel()
     {
         isRulesActive = !isRulesActive;
@@ -111,6 +137,21 @@ public class MyUIManager : MonoBehaviour
             Time.timeScale = 1f;
         }
     }
+
+    public void CloseTuto()
+    {
+        isMenuActive = false;
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1f; // Resume the game
+    }
+    public void OpenTuto()
+    {
+        isMenuActive = true;
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0f; // Pause the game
+    }
+
+
     #endregion
 
     #region Hand Value Updates
@@ -135,20 +176,27 @@ public class MyUIManager : MonoBehaviour
 
     #region Data UI Updates
 
-    void Update()
+    private void Update()
     {
-        ScoreUIText.SetText(manager.puntaje.ToString());
-        HandsText.SetText(inventoryManager.lives.ToString());
-        ObjScoreUIText.SetText(manager.puntajeObj.ToString());
-        RecordText.SetText(manager.record.ToString());
-        RoundText.SetText(inventoryManager.round.ToString());
-        LimitCart.SetText(inventoryManager.limiteCart.ToString());
-        GemsText.SetText(inventoryManager.playerGems.ToString());
-        BetText.SetText(manager.playerBet.ToString());
+        ReconnectInventoryManager();
 
-        // Actualizar las estadísticas específicas de mejoras
-        cantExLimText.SetText(inventoryManager.mejorasLimiteCompradas.ToString());
-        MultText.SetText(inventoryManager.multiplicadorRecompensas.ToString("F2")); // Formato con 2 decimales
+
+        // Actualizar la UI solo si las referencias son válidas
+        if (manager != null && inventoryManager != null)
+        {
+            ScoreUIText.SetText(manager.puntaje.ToString());
+            HandsText.SetText(inventoryManager.lives.ToString());
+            ObjScoreUIText.SetText(manager.puntajeObj.ToString());
+            RecordText.SetText(manager.record.ToString());
+            RoundText.SetText(inventoryManager.round.ToString());
+            LimitCart.SetText(inventoryManager.limiteCart.ToString());
+            GemsText.SetText(inventoryManager.playerGems.ToString());
+            BetText.SetText(manager.playerBet.ToString());
+
+            // Actualizar las estadísticas específicas de mejoras
+            cantExLimText.SetText(inventoryManager.mejorasLimiteCompradas.ToString());
+            MultText.SetText(inventoryManager.multiplicadorRecompensas.ToString("F2"));
+        }
 
         // Escuchar tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -165,6 +213,14 @@ public class MyUIManager : MonoBehaviour
 
     public void UpdateUI()
     {
+        // Reconectar InventoryManager si es necesario
+        ReconnectInventoryManager();
+
+        if (manager == null || inventoryManager == null)
+        {
+            Debug.LogError("MyUIManager: Referencias a GameManager o InventoryManager no están configuradas.");
+            return;
+        }
         ScoreUIText.SetText(manager.puntaje.ToString());
         HandsText.SetText(inventoryManager.lives.ToString());
         ObjScoreUIText.SetText(manager.puntajeObj.ToString());
@@ -207,6 +263,21 @@ public class MyUIManager : MonoBehaviour
     {
         string mensaje = "";
         roundMessenger.Announce(mensaje);
+    }
+    private void ReconnectInventoryManager()
+    {
+        if (inventoryManager == null)
+        {
+            inventoryManager = InventoryManager.instance;
+            if (inventoryManager == null)
+            {
+                Debug.LogError("MyUIManager: No se pudo reconectar con InventoryManager.");
+            }
+            else
+            {
+                Debug.Log("MyUIManager: Reconectado con InventoryManager.");
+            }
+        }
     }
     #endregion
 }

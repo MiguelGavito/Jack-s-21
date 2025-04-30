@@ -24,7 +24,6 @@ public class ShopManager : MonoBehaviour
             AudioManager.Instance.SetVolume(0.5f);
         }
         data = InventoryManager.instance;
-        PlayerItems = data.GetPlayerItems();
         gems = data.playerGems;
         
     }
