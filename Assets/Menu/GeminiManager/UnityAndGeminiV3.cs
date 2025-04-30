@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using System.IO; 
 using System;
+using System.Diagnostics;
 
 [System.Serializable]
 public class UnityAndGeminiKey
@@ -55,6 +56,19 @@ public class InlineData
 
 public class UnityAndGeminiV3: MonoBehaviour
 {
+
+    private string lastResponse = ""; // Almacena la última respuesta generada por la API
+
+    public void SetApiKey(string key)
+    {
+        apiKey = key;
+    }
+
+    public string GetLastResponse()
+    {
+        return lastResponse;
+    }
+
     [Header("JSON API Configuration")]
     public TextAsset jsonApi;
 
@@ -76,6 +90,7 @@ public class UnityAndGeminiV3: MonoBehaviour
     public Material skyboxMaterial; 
 
 
+
     void Start()
     {
         UnityAndGeminiKey jsonApiKey = JsonUtility.FromJson<UnityAndGeminiKey>(jsonApi.text);
@@ -85,36 +100,36 @@ public class UnityAndGeminiV3: MonoBehaviour
         if (imagePrompt != ""){StartCoroutine( SendPromptRequestToGeminiImageGenerator(imagePrompt));};
     }
 
-    private IEnumerator SendPromptRequestToGemini(string promptText)
+    public IEnumerator SendPromptRequestToGemini(string promptText)
     {
         string url = $"{apiEndpoint}?key={apiKey}";
-     
-        string jsonData = "{\"contents\": [{\"parts\": [{\"text\": \"{" + promptText + "}\"}]}]}";
+        string jsonData = "{\"contents\": [{\"parts\": [{\"text\": \"" + promptText + "\"}]}]}";
 
         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonData);
 
-        // Create a UnityWebRequest with the JSON data
-        using (UnityWebRequest www = new UnityWebRequest(url, "POST")){
+        using (UnityWebRequest www = new UnityWebRequest(url, "POST"))
+        {
             www.uploadHandler = new UploadHandlerRaw(jsonToSend);
             www.downloadHandler = new DownloadHandlerBuffer();
             www.SetRequestHeader("Content-Type", "application/json");
 
             yield return www.SendWebRequest();
 
-            if (www.result != UnityWebRequest.Result.Success) {
-                Debug.LogError(www.error);
-            } else {
-                Debug.Log("Request complete!");
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                UnityEngine.Debug.LogError(www.error);
+                lastResponse = ""; // Respuesta vacía en caso de error
+            }
+            else
+            {
                 Response response = JsonUtility.FromJson<Response>(www.downloadHandler.text);
                 if (response.candidates.Length > 0 && response.candidates[0].content.parts.Length > 0)
-                    {
-                        //This is the response to your request
-                        string text = response.candidates[0].content.parts[0].text;
-                        Debug.Log(text);
-                    }
+                {
+                    lastResponse = response.candidates[0].content.parts[0].text;
+                }
                 else
                 {
-                    Debug.Log("No text found.");
+                    lastResponse = ""; // Respuesta vacía si no hay texto
                 }
             }
         }
@@ -159,9 +174,9 @@ public class UnityAndGeminiV3: MonoBehaviour
             yield return www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success) {
-                Debug.LogError(www.error);
+                UnityEngine.Debug.LogError(www.error);
             } else {
-                Debug.Log("Request complete!");
+                UnityEngine.Debug.Log("Request complete!");
                 Response response = JsonUtility.FromJson<Response>(www.downloadHandler.text);
                 if (response.candidates.Length > 0 && response.candidates[0].content.parts.Length > 0)
                     {
@@ -176,7 +191,7 @@ public class UnityAndGeminiV3: MonoBehaviour
                             }
                         };
 
-                        Debug.Log(reply);
+                        UnityEngine.Debug.Log(reply);
                         //This part shows the text in the Canvas
                         uiText.text = reply;
                         //This part adds the response to the chat history, for your next message
@@ -185,7 +200,7 @@ public class UnityAndGeminiV3: MonoBehaviour
                     }
                 else
                 {
-                    Debug.Log("No text found.");
+                    UnityEngine.Debug.Log("No text found.");
                 }
              }
         }  
@@ -221,12 +236,12 @@ private IEnumerator SendPromptRequestToGeminiImageGenerator(string promptText)
 
         if (www.result != UnityWebRequest.Result.Success) 
         {
-            Debug.LogError(www.error);
+            UnityEngine.Debug.LogError(www.error);
         } 
         else 
         {
-            Debug.Log("Request complete!");
-            Debug.Log("Full response: " + www.downloadHandler.text); // Log full response for debugging
+            UnityEngine.Debug.Log("Request complete!");
+            UnityEngine.Debug.Log("Full response: " + www.downloadHandler.text); // Log full response for debugging
             
             // Parse the JSON response
             try 
@@ -241,7 +256,7 @@ private IEnumerator SendPromptRequestToGeminiImageGenerator(string promptText)
                     {
                         if (!string.IsNullOrEmpty(part.text))
                         {
-                            Debug.Log("Text response: " + part.text);
+                            UnityEngine.Debug.Log("Text response: " + part.text);
                         }
                         else if (part.inlineData != null && !string.IsNullOrEmpty(part.inlineData.data))
                         {
@@ -254,8 +269,8 @@ private IEnumerator SendPromptRequestToGeminiImageGenerator(string promptText)
                             byte[] pngBytes = tex.EncodeToPNG();
                             string path = Application.persistentDataPath + "/gemini-image.png";
                             File.WriteAllBytes(path, pngBytes);
-                            Debug.Log("Saved to: " + path);
-                            Debug.Log("Image received successfully!");
+                            UnityEngine.Debug.Log("Saved to: " + path);
+                            UnityEngine.Debug.Log("Image received successfully!");
 
                             // Load the saved image back as Texture2D
                             string imagePath = Path.Combine(Application.persistentDataPath, "gemini-image.png");
@@ -269,11 +284,11 @@ private IEnumerator SendPromptRequestToGeminiImageGenerator(string promptText)
                                 skyboxMaterial.shader = Shader.Find("Skybox/Panoramic");
                                 skyboxMaterial.SetTexture("_MainTex", panoramaTex);
                                 DynamicGI.UpdateEnvironment();
-                                Debug.Log("Skybox updated with panoramic image!");
+                                UnityEngine.Debug.Log("Skybox updated with panoramic image!");
                             }
                             else
                             {
-                                Debug.LogError("Skybox material not assigned!");
+                                UnityEngine.Debug.LogError("Skybox material not assigned!");
                             }
 
                             // Another approach but might cause distorsion
@@ -303,12 +318,12 @@ private IEnumerator SendPromptRequestToGeminiImageGenerator(string promptText)
                 }
                 else
                 {
-                    Debug.Log("No valid response parts found.");
+                    UnityEngine.Debug.Log("No valid response parts found.");
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError("JSON Parse Error: " + e.Message);
+                UnityEngine.Debug.LogError("JSON Parse Error: " + e.Message);
             }
         }
     }

@@ -9,7 +9,7 @@ public enum TurnState
     PlayerTurn,
     //FlipUpTurn, // turno donde se voltean las cartas
     DealerTurn,
-    //ObjectionTurn, //turno de accion de objeto para el jugador
+
     EndRound
 }
 
