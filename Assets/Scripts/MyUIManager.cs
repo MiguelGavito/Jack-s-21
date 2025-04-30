@@ -140,14 +140,14 @@ public class MyUIManager : MonoBehaviour
 
     public void CloseTuto()
     {
-        isMenuActive = false;
-        pauseMenu.SetActive(false);
+        isRulesActive = false;
+        rulesPanel.SetActive(false);
         Time.timeScale = 1f; // Resume the game
     }
     public void OpenTuto()
     {
-        isMenuActive = true;
-        pauseMenu.SetActive(true);
+        isRulesActive = true;
+        rulesPanel.SetActive(true);
         Time.timeScale = 0f; // Pause the game
     }
 

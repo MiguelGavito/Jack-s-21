@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator StartNewRound()
     {
         SincronizarEstadisticas();
-
+        Time.timeScale = 1f;
         Debug.Log("StartNewRound: Robando primera carta para el jugador");
         if (player1Transform == null || deckManager == null)
         {
@@ -180,11 +180,11 @@ public class GameManager : MonoBehaviour
             yield break;
         }
         PlayerDrawCard(player1Transform);
-        yield return new WaitForSeconds(0.5f);
-
+        yield return new WaitForSecondsRealtime(0.5f);
+        //Aqui arriba esta el error, el juego se traba justo aqui, no se porque ni como pero aqui se traba y deja de funcionar
         Debug.Log("StartNewRound: Robando segunda carta para el jugador");
         PlayerDrawCard(player1Transform);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         Debug.Log("StartNewRound: Robando carta oculta para el dealer");
         if (player2Transform == null)
@@ -193,11 +193,11 @@ public class GameManager : MonoBehaviour
             yield break;
         }
         PlayerDrawCardFaceDown(player2Transform);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         Debug.Log("StartNewRound: Robando segunda carta para el dealer");
         PlayerDrawCard(player2Transform);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         Debug.Log("StartNewRound: Finalizado");
     }
